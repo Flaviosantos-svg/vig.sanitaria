@@ -11,7 +11,7 @@ import requests
 from werkzeug.utils import secure_filename
 
 # --- 1. CONFIGURAÇÃO INICIAL DO FLASK ---
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 app.secret_key = 'sua_chave_secreta_super_dificil'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -23,7 +23,7 @@ def home():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-    
+
 # TADA E TEMPO
 @app.template_filter('datetimeformat')
 def datetimeformat(value, format='%d/%m/%Y'):
@@ -506,6 +506,3 @@ if __name__ == '__main__':
     
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-    
