@@ -499,10 +499,6 @@ def licenca_evento_pdf(id):
 # ==================================================================
 # 9. INICIAR A APLICAÇÃO
 # ==================================================================
-if __name__ == '__main__':
-    # Garante que o banco de dados e as tabelas sejam criados ao iniciar
-    setup_database()
-    app.run(debug=True, port=5001)
-    
+
 if __name__ == "__main__":
     app.run(debug=True)
