@@ -40,6 +40,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
+
 # ==================================================================
 # 2. MODELO DO BANCO DE DADOS (TABELA DE SOLICITAÇÕES)
 # ==================================================================
@@ -52,6 +53,12 @@ class Solicitacoes(db.Model):
     status = db.Column(db.String(50), default='Em análise')
     justificativa_status = db.Column(db.Text, nullable=True)
     data_solicitacao = db.Column(db.DateTime, default=datetime.utcnow)
+
+# 2. CONFIGURAÇÃO E MANIPULAÇÃO DO BANCO DE DADOS (SQLite)
+def get_db_connection():
+    conn = sqlite3.connect('vigilancia.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
     def __repr__(self):
         return f'<Solicitacao {self.protocolo}>'
@@ -199,6 +206,16 @@ def consulta_unificada():
 def gerar_auto_infracao():
     return render_template('form_auto_infracao.html')
 
+# --- Rota da API de CNPJ ---
+@app.route('/api/consulta-cnpj/<string:cnpj>')
+def consulta_cnpj(cnpj):
+    try:
+        cnpj_limpo = ''.join(filter(str.isdigit, cnpj))
+        response = requests.get(f'https://brasilapi.com.br/api/cnpj/v1/{cnpj_limpo}')
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.RequestException:
+        return jsonify({"erro": "CNPJ não encontrado ou API indisponível"}), 404
 
 # ==================================================================
 # 6. ROTAS DE AUTENTICAÇÃO E ÁREA ADMINISTRATIVA
@@ -287,6 +304,62 @@ def setup_database():
     print("Verificando e criando tabelas do banco de dados...")
     db.create_all()
     print("Tabelas prontas.")
+    solicitacao_raw = conn.execute('SELECT * FROM solicitacoes WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    if not solicitacao_raw:
+        abort(404, "Solicitação não encontrada.")
+        
+    dados_formulario = json.loads(solicitacao_raw['dados_formulario'])
+    return render_template('admin_avaliacao.html', solicitacao=solicitacao_raw, dados=dados_formulario)
+# ==================================================================
+# 7. ROTAS PARA IMPRESSÃO E GERAÇÃO DE DOCUMENTOS
+# ==================================================================
+@app.route('/imprimir/documento/<protocolo>')
+def imprimir_documento(protocolo):
+    conn = get_db_connection()
+    solicitacao = conn.execute(
+        'SELECT * FROM solicitacoes WHERE protocolo = ? AND status = "Aprovado"', 
+        (protocolo,)
+    ).fetchone()
+    conn.close()
+
+    if not solicitacao:
+        flash('Documento não encontrado ou a solicitação ainda não foi aprovada.', 'danger')
+        return redirect(url_for('consulta_unificada'))
+
+    dados = json.loads(solicitacao['dados_formulario'])
+    
+    # Lógica para decidir qual template de impressão usar
+    template_impressao = 'licenca_impressao_generica.html' # Padrão
+    if solicitacao['tipo_solicitacao'] == 'Licença para Evento':
+        template_impressao = 'licenca_evento_impressao.html'
+    # Adicione outras condições aqui (ex: if tipo == 'Abertura de Empresa'...)
+
+    return render_template(template_impressao, solicitacao=solicitacao, dados=dados)
+
+@app.route('/licenca_evento/pdf/<protocolo>')
+def licenca_evento_pdf(protocolo):
+    if not HTML:
+        flash('A funcionalidade de gerar PDF está desativada. Contate o administrador.', 'danger')
+        return redirect(url_for('consulta_unificada'))
+
+    conn = get_db_connection()
+    solicitacao = conn.execute('SELECT * FROM solicitacoes WHERE protocolo = ?', (protocolo,)).fetchone()
+    conn.close()
+
+    if not solicitacao:
+        abort(404, "Licença não encontrada")
+
+    dados = json.loads(solicitacao['dados_formulario'])
+    rendered = render_template('licenca_evento_impressao.html', solicitacao=solicitacao, dados=dados)
+    pdf = HTML(string=rendered).write_pdf()
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'inline; filename=licenca_{protocolo}.pdf'
+    return response
+
+# 8. PONTO DE ENTRADA PARA PRODUÇÃO (GUNICORN) E DESENVOLVIMENTO
 
 def create_app():
     """Função 'Factory' que o Gunicorn usa para obter a aplicação."""
@@ -294,7 +367,6 @@ def create_app():
     with app.app_context():
         setup_database()
     return app
-
 if __name__ == '__main__':
     """Bloco para DESENVOLVIMENTO LOCAL."""
     print(">>> EXECUTANDO EM MODO DE DESENVOLVIMENTO LOCAL <<<")
