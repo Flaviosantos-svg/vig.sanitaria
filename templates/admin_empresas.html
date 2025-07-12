@@ -1,0 +1,79 @@
+<!-- ================================================================== -->
+<!--           FICHEIRO: templates/admin_empresas.html                -->
+<!-- ================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Gestão de Empresas</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+        .header { background-color: #343a40; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.5em; }
+        .header a { color: white; text-decoration: none; }
+        .container { max-width: 95%; margin: auto; padding: 2em; }
+        .toolbar { background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .tabs { margin-bottom: 20px; }
+        .tabs a { padding: 10px 15px; text-decoration: none; color: #007bff; border-bottom: 3px solid transparent; }
+        .tabs a.active { border-bottom-color: #007bff; font-weight: bold; }
+        .search-form { display: flex; gap: 10px; align-items: center; }
+        .search-form input, .search-form select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .search-form button { padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Gestão de Empresas</h1>
+        <a href="/admin">‹ Voltar ao Painel</a>
+    </div>
+    <div class="container">
+        <div class="toolbar">
+            <div class="tabs">
+                <a href="{{ url_for('admin_empresas_lista', view='todas') }}" class="{{ 'active' if current_view == 'todas' else '' }}">Todas as Empresas</a>
+                <a href="{{ url_for('admin_empresas_lista', view='novas') }}" class="{{ 'active' if current_view == 'novas' else '' }}">Novas Empresas (Últimos 7 dias)</a>
+            </div>
+            <form class="search-form" method="get">
+                <input type="hidden" name="view" value="{{ current_view }}">
+                <input type="text" name="q" placeholder="Buscar por CNPJ ou Razão Social..." value="{{ current_query or '' }}">
+                <select name="situacao">
+                    <option value="todas">Todas as Situações</option>
+                    {% for sit in situacoes %}
+                    <option value="{{ sit }}" {% if sit == current_situacao %}selected{% endif %}>{{ sit }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Filtrar</button>
+            </form>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>CNPJ</th>
+                    <th>Razão Social</th>
+                    <th>CNAE Principal</th>
+                    <th>Situação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for empresa in empresas %}
+                <tr>
+                    <td>{{ empresa.cnpj }}</td>
+                    <td>{{ empresa.razao_social }}</td>
+                    <td>{{ empresa.cnae_principal }}</td>
+                    <td>{{ empresa.situacao }}</td>
+                    <td><a href="#">Ver Detalhes</a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Nenhuma empresa encontrada com os filtros atuais.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

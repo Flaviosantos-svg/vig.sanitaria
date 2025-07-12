@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário de Notificação Sanitária</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f6f9; padding: 20px; }
+        .container { max-width: 850px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px_15px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #dc3545; }
+        h3 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px; }
+        fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        legend { font-weight: 600; font-size: 1.2em; color: #333; }
+        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 500; }
+        input[type="text"], input[type="date"], input[type="number"], select, textarea {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;
+        }
+        textarea { min-height: 120px; resize: vertical; }
+        .static-text { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; line-height: 1.6; }
+        .signature-pad { border: 2px dashed #ccc; height: 150px; text-align: center; line-height: 150px; color: #aaa; margin-top: 10px; }
+        .submit-btn { display: block; width: 100%; padding: 15px; background-color: #dc3545; color: white; font-size: 1.2em; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>NOTIFICAÇÃO SANITÁRIA</h2>
+        <h1>Nº {{ numero_notificacao }}</h1>
+        
+        <form action="{{ url_for('notificacao') }}" method="post">
+            
+            {% if dados_origem.id %}
+            <input type="hidden" name="origem_id" value="{{ dados_origem.id }}">
+            <input type="hidden" name="origem_tipo" value="{{ dados_origem.tipo }}">
+            {% endif %}
+
+            <fieldset>
+                <legend>Identificação</legend>
+                <label for="notificado">NOTIFICADO:</label>
+                <input type="text" id="notificado" name="notificado" value="{{ dados_origem.notificado or '' }}" required>
+
+                <label for="cnpj_cpf">CNPJ/CPF:</label>
+                <input type="text" id="cnpj_cpf" name="cnpj_cpf" value="{{ dados_origem.cnpj_cpf or '' }}">
+
+                <label for="endereco">ENDEREÇO:</label>
+                <input type="text" id="endereco" name="endereco" value="{{ dados_origem.endereco or '' }}">
+                
+                <label for="responsavel_legal">RESPONSÁVEL LEGAL (caso seja CNPJ):</label>
+                <input type="text" id="responsavel_legal" name="responsavel_legal">
+            </fieldset>
+
+            <p><strong>ASSUNTO:</strong> Notificação para correção de irregularidades sanitárias</p>
+
+            <fieldset>
+                <legend>Dados da Inspeção</legend>
+                <label for="data_inspecao">DATA DA INSPEÇÃO:</label>
+                <input type="date" id="data_inspecao" name="data_inspecao" required>
+
+                <label for="tecnicos">TÉCNICOS RESPONSÁVEIS PELA INSPEÇÃO:</label>
+                <select id="tecnicos" name="tecnicos" multiple required>
+                    {% for tecnico in tecnicos %}
+                    <option value="{{ tecnico.id }}">{{ tecnico.nome }}</option>
+                    {% endfor %}
+                </select>
+                <small>Segure 'Ctrl' (ou 'Cmd' no Mac) para selecionar mais de um.</small>
+                
+                <label>MATRÍCULA/REGISTROS PROFISSIONAIS:</label>
+                <input type="text" name="matriculas" placeholder="Preenchido automaticamente ao selecionar técnicos">
+            </fieldset>
+
+            <h3>1. FUNDAMENTO LEGAL:</h3>
+            <div class="static-text">
+                Com base na legislação sanitária vigente, especialmente a Lei nº 6.437/1977, que configura infrações à legislação sanitária federal, bem como normas estaduais e municipais pertinentes, notificamos o estabelecimento / Cidadão para adoção das medidas corretivas abaixo indicadas.
+            </div>
+
+            <h3>2. IRREGULARIDADES CONSTATADAS:</h3>
+            <textarea name="irregularidades" required placeholder="Descrever com clareza as inconformidades encontradas durante a inspeção">{{ dados_origem.irregularidades or '' }}</textarea>
+
+            <h3>3. PRAZO PARA REGULARIZAÇÃO:</h3>
+            <label for="prazo">Fica concedido o prazo de:</label>
+            <input type="number" id="prazo" name="prazo" min="1" required>
+            <span>dias úteis a contar do recebimento desta notificação para a devida correção das irregularidades apontadas.</span>
+
+            <h3>4. PENALIDADES:</h3>
+            <div class="static-text">
+                O não atendimento às exigências ora notificadas poderá ensejar a aplicação de penalidades previstas em lei, incluindo advertência, interdição parcial ou total, e/ou multa, conforme a gravidade da infração.
+            </div>
+
+            <fieldset>
+                <legend>Assinaturas</legend>
+                <label>LOCAL E DATA:</label>
+                <input type="text" name="local_data" value="Esperantina - PI, {{ hoje }}">
+
+                <label>ASSINATURA DO FISCAL SANITÁRIO:</label>
+                <div class="signature-pad">[Área para Assinatura Eletrônica do Fiscal]</div>
+
+                <label>NOME DO NOTIFICADO:</label>
+                <input type="text" name="nome_notificado_assinatura" value="{{ dados_origem.notificado or '' }}" readonly>
+                
+                <label>ASSINATURA DO NOTIFICADO (OU RESPONSÁVEL LEGAL):</label>
+                <div class="signature-pad">[Área para Assinatura Eletrônica do Notificado]</div>
+            </fieldset>
+            
+            <div class="static-text">
+                <strong>Observação:</strong> O não comparecimento ou o não cumprimento das exigências no prazo estabelecido não exime o estabelecimento das responsabilidades legais cabíveis.
+            </div>
+
+            <button type="submit" class="submit-btn">Gerar Notificação</button>
+        </form>
+    </div>
+</body>
+</html>

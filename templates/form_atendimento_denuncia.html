@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Atendimento de Denúncia</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #0056b3; }
+        fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        legend { font-weight: 600; font-size: 1.2em; color: #0056b3; padding: 0 10px; }
+        .info-field { background-color: #e9ecef; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 15px; }
+        .info-field strong { color: #495057; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; }
+        select, input[type="date"], input[type="text"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 120px; }
+        .radio-group label, .checkbox-group label { display: inline-block; margin-right: 15px; font-weight: normal; }
+        .form-group { margin-bottom: 20px; }
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; text-decoration: none; text-align: center; }
+        .btn-save { background-color: #28a745; color: white; }
+        .btn-print { background-color: #17a2b8; color: white; }
+        .btn-back { background-color: #6c757d; color: white; }
+        .anexos-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+        }
+        .anexo-item {
+            width: 200px;
+            text-align: center;
+        }
+        .anexo-item img, .anexo-item video {
+            max-width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        .anexo-item a {
+            display: block;
+            font-size: 0.8em;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Atendimento de Denúncia</h1>
+
+        <form action="{{ url_for('atendimento_denuncias', denuncia_id=denuncia.id) }}" method="post" enctype="multipart/form-data">
+            
+            <fieldset>
+                <legend>Informações da Denúncia (Pré-preenchido)</legend>
+                <div class="info-field"><strong>Número da Denúncia:</strong> {{ denuncia.numero }}</div>
+                <div class="info-field"><strong>Data da Denúncia:</strong> {{ denuncia.data }}</div>
+                <div class="info-field"><strong>Tipo de Denúncia:</strong> {{ denuncia.tipo }}</div>
+                <div class="info-field"><strong>Local da Ocorrência:</strong> {{ denuncia.local }}</div>
+                <div class="info-field"><strong>Denunciante:</strong> {{ denuncia.denunciante }}</div>
+                <div class="info-field">
+                    <strong>Descrição Original:</strong><br>
+                    {{ denuncia.descricao }}
+                </div>
+                <div class="form-group">
+                    <strong>Anexos da Denúncia:</strong>
+                    
+                    {% if denuncia.anexos_denunciante %}
+                        <div class="anexos-container">
+                            {% for anexo in denuncia.anexos_denunciante %}
+                                <div class="anexo-item">
+                                    {% if anexo.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+                                        <img src="{{ url_for('static', filename='uploads/denuncias/' + anexo) }}" alt="{{ anexo }}">
+                                    {% elif anexo.lower().endswith(('.mp4', '.webm', '.ogg')) %}
+                                        <video controls>
+                                            <source src="{{ url_for('static', filename='uploads/denuncias/' + anexo) }}" type="video/mp4">
+                                            Seu navegador não suporta o player de vídeo.
+                                        </video>
+                                    {% endif %}
+                                    <a href="{{ url_for('static', filename='uploads/denuncias/' + anexo) }}" target="_blank">{{ anexo }}</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="info-field">Nenhum anexo foi enviado com esta denúncia.</div>
+                    {% endif %}
+                </div>
+                ```
+                
+            </fieldset>
+
+            <fieldset>
+                <legend>📋 Atendimento da Denúncia</legend>
+                
+                <div class="form-group radio-group">
+                    <label>Status do Atendimento:</label>
+                    <label><input type="radio" name="status_atendimento" value="Pendente" {% if denuncia.status == 'Pendente' %}checked{% endif %}> Pendente</label>
+                    <label><input type="radio" name="status_atendimento" value="Em andamento" {% if denuncia.status == 'Em andamento' %}checked{% endif %}> Em andamento</label>
+                    <label><input type="radio" name="status_atendimento" value="Concluído" {% if denuncia.status == 'Concluído' %}checked{% endif %}> Concluído</label>
+                    <label><input type="radio" name="status_atendimento" value="Encaminhado" {% if denuncia.status == 'Encaminhado' %}checked{% endif %}> Encaminhado</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="data_atendimento">Data do Atendimento:</label>
+                    <input type="date" id="data_atendimento" name="data_atendimento" value="{{ denuncia.data_atendimento }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="agente_responsavel">Agente Responsável:</label>
+                    <select id="agente_responsavel" name="agente_responsavel">
+                        <option value="agente_1" {% if denuncia.agente == 'agente_1' %}selected{% endif %}>Fiscal 1 - Fulano de Tal</option>
+                        <option value="agente_2" {% if denuncia.agente == 'agente_2' %}selected{% endif %}>Fiscal 2 - Ciclana da Silva</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>Tipo de Ação Realizada:</label>
+                    <label><input type="checkbox" name="acao_visita"> Visita in loco</label>
+                    <label><input type="checkbox" name="acao_contato"> Contato telefônico</label>
+                    <label><input type="checkbox" name="acao_encaminhamento"> Encaminhamento a outro setor:</label>
+                    <input type="text" name="acao_encaminhamento_local" placeholder="Qual? Digite o setor">
+                    <label><input type="checkbox" name="acao_outros"> Outros:</label>
+                    <input type="text" name="acao_outros_texto" placeholder="Especifique">
+                </div>
+
+                <div class="form-group">
+                    <label for="relato_atendimento">Relato do Atendimento:</label>
+                    <textarea id="relato_atendimento" name="relato_atendimento" rows="6"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="anexos">Anexar Documentos/Fotos:</label>
+                    <input type="file" id="anexos" name="anexos" multiple>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>Encaminhamentos Finais:</label><br>
+                    <label><input type="checkbox" name="enc_juridico"> Encaminhar ao jurídico</label><br>
+                    <label><input type="checkbox" name="enc_sanitaria"> Encaminhar à vigilância sanitária</label><br>
+                    <label><input type="checkbox" name="enc_meio_ambiente"> Encaminhar à secretaria de meio ambiente</label><br>
+                    <label><input type="checkbox" name="enc_zoonoses"> Encaminhar à Zoonoses</label><br>
+                    <label><input type="checkbox" name="enc_arquivamento"> Arquivamento</label><br>
+                    <label><input type="checkbox" name="enc_outro"> Outro:</label>
+                    <input type="text" name="enc_outro_texto" placeholder="Especifique">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>✅ Ações Pós-Atendimento</legend>
+                <div class="checkbox-group">
+                    <p>Após salvar, deseja gerar um documento?</p>
+                    <label><input type="checkbox" name="gerar_notificacao" value="sim"> Gerar Notificação</label>
+                    <label><input type="checkbox" name="gerar_auto_infracao" value="sim"> Gerar Auto de Infração</label>
+                </div>
+            </fieldset>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-save">Salvar Atendimento</button>
+                <a href="#" class="btn btn-print">Imprimir Relatório</a>
+                <a href="{{ url_for('lista_denuncias') }}" class="btn btn-back">Voltar à Lista</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

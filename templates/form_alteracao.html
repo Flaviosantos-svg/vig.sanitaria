@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Requerimento de Alteração</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3, h4 { margin-top: 0; color: #0056b3; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        h4 { margin-top: 20px; color: #333; font-size: 1.1em; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border: 1px solid #ffeeba; padding: 15px; border-radius: 4px; }
+        .solicitante-section { background-color: #e9ecef; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Requerimento de Alteração</h1>
+        
+        <form method="post" action="{{ url_for('alteracao_empresa') }}">
+            <div class="form-group">
+                <label for="cnpj">Para começar, digite o CNPJ da empresa:</label>
+                <input type="text" id="cnpj" name="cnpj" required>
+            </div>
+            <button type="submit">Buscar Empresa</button>
+        </form>
+        <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
+        <hr>
+
+        {% if empresa %}
+        <form action="{{ url_for('salvar_alteracao', id=empresa.id) }}" method="post">
+            
+            <h3>Editando Dados da Empresa: {{ empresa.razao_social }}</h3>
+            
+            <h4>Dados da Empresa</h4>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="razao_social">Razão Social</label>
+                    <input type="text" id="razao_social" name="razao_social" value="{{ empresa.razao_social }}">
+                </div>
+                <div class="form-group">
+                    <label for="nome_fantasia">Nome Fantasia</label>
+                    <input type="text" id="nome_fantasia" name="nome_fantasia" value="{{ empresa.nome_fantasia }}">
+                </div>
+            </div>
+            
+            <h4>Endereço e Contato</h4>
+            <!-- ... (todos os campos de endereço e contato aqui, preenchidos com os dados da empresa) -->
+
+            <h4>Responsáveis</h4>
+            <!-- ... (todos os campos de responsáveis aqui, preenchidos com os dados da empresa) -->
+
+            <div class="solicitante-section">
+                <h4>Identificação do Solicitante da Alteração</h4>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label for="solicitante_nome">Nome Completo</label>
+                        <input type="text" id="solicitante_nome" name="solicitante_nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="solicitante_cpf">CPF</label>
+                        <input type="text" id="solicitante_cpf" name="solicitante_cpf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="solicitante_tel">Telefone</label>
+                        <input type="text" id="solicitante_tel" name="solicitante_tel" required>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <button type="submit">Guardar Alterações</button>
+        </form>
+        {% elif request.method == 'POST' %}
+            <p class="alert-warning">Nenhuma empresa encontrada com o CNPJ informado.</p>
+        {% endif %}
+
+    </div>
+</body>
+</html>

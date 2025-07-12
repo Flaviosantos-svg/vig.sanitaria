@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Requerimento de Licença para Eventos</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3 { margin-top: 0; color: #0056b3; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .checkbox-group label, .radio-group label { font-weight: normal; margin-left: 5px; }
+        button { padding: 12px 25px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Requerimento de Licença para Eventos</h1>
+<form action="{{ url_for('licenca_evento') }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="tipo_solicitacao" value="Licença para Evento">           
+            <h3>1. Dados do Responsável pela Organização</h3>
+            <div class="grid-2">
+                <div class="form-group"><label for="organizador_nome">Nome Completo</label><input type="text" id="organizador_nome" name="organizador_nome" required></div>
+                <div class="form-group"><label for="organizador_doc">CPF ou CNPJ</label><input type="text" id="organizador_doc" name="organizador_doc" required></div>
+                <div class="form-group"><label for="organizador_empresa">Nome da Empresa (se houver)</label><input type="text" id="organizador_empresa" name="organizador_empresa"></div>
+                <div class="form-group"><label for="organizador_tel">Telefone</label><input type="text" id="organizador_tel" name="organizador_tel" required></div>
+            </div>
+            <div class="form-group"><label for="organizador_email">E-mail</label><input type="email" id="organizador_email" name="organizador_email" required></div>
+            <div class="form-group"><label for="organizador_endereco">Endereço Completo</label><input type="text" id="organizador_endereco" name="organizador_endereco" required></div>
+
+            <h3>2. Informações do Evento</h3>
+            <div class="form-group"><label for="evento_nome">Nome do Evento</label><input type="text" id="evento_nome" name="evento_nome" required></div>
+            <div class="form-group">
+                <label>Tipo de Evento</label>
+                <select id="evento_tipo" name="evento_tipo" required>
+                    <option value="">-- Selecione --</option>
+                    <option value="Cultural">Cultural</option>
+                    <option value="Religioso">Religioso</option>
+                    <option value="Esportivo">Esportivo</option>
+                    <option value="Gastronômico">Gastronômico</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="evento_tipo_outro_group"><label for="evento_tipo_outro">Especifique o tipo</label><input type="text" id="evento_tipo_outro" name="evento_tipo_outro"></div>
+            <div class="grid-2">
+                <div class="form-group"><label for="evento_data_inicio">Data de Início</label><input type="date" id="evento_data_inicio" name="evento_data_inicio" required></div>
+                <div class="form-group"><label for="evento_data_fim">Data de Fim</label><input type="date" id="evento_data_fim" name="evento_data_fim" required></div>
+            </div>
+            <div class="form-group"><label for="evento_horario">Horário de Funcionamento</label><input type="text" id="evento_horario" name="evento_horario" required></div>
+            <div class="form-group"><label for="evento_local">Local do Evento (endereço completo)</label><input type="text" id="evento_local" name="evento_local" required></div>
+            <div class="form-group"><label for="evento_publico_estimado">Público Estimado</label><input type="number" id="evento_publico_estimado" name="evento_publico_estimado" required></div>
+            <div class="form-group">
+                <label>Estrutura Temporária?</label>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" name="evento_estrutura_temp" value="Tendas"> Tendas</div>
+                    <div><input type="checkbox" name="evento_estrutura_temp" value="Palco"> Palco</div>
+                    <div><input type="checkbox" name="evento_estrutura_temp" value="Banheiros químicos"> Banheiros químicos</div>
+                    <div><input type="checkbox" name="evento_estrutura_temp" value="Cozinha"> Cozinha</div>
+                </div>
+            </div>
+            <div class="form-group"><label for="evento_estrutura_outro">Outras Estruturas (especificar)</label><input type="text" id="evento_estrutura_outro" name="evento_estrutura_outro"></div>
+
+            <h3>3. Serviços e Atividades no Evento</h3>
+            <div class="form-group"><label>Haverá manipulação de alimentos/bebidas?</label><select id="servico_alimentos" name="servico_alimentos"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+            <div class="form-group hidden" id="servico_alimentos_detalhes_group"><label for="servico_alimentos_detalhes">Nomes dos permissionários e produtos</label><textarea id="servico_alimentos_detalhes" name="servico_alimentos_detalhes" rows="4"></textarea></div>
+            <div class="form-group"><label>Haverá fornecimento de água potável?</label><select name="servico_agua_potavel"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+            <div class="form-group"><label for="servico_residuos">Controle de resíduos sólidos e lixo</label><textarea id="servico_residuos" name="servico_residuos" rows="3" required></textarea></div>
+            <div class="form-group"><label for="servico_sanitarios">Número de sanitários disponíveis</label><input type="number" id="servico_sanitarios" name="servico_sanitarios" required></div>
+
+            <h3>4. Responsável pela Liberação do Local</h3>
+            <div class="grid-2">
+                <div class="form-group"><label for="local_resp_nome">Nome Completo</label><input type="text" id="local_resp_nome" name="local_resp_nome" required></div>
+                <div class="form-group"><label for="local_resp_cpf">CPF</label><input type="text" id="local_resp_cpf" name="local_resp_cpf" required></div>
+                <div class="form-group"><label for="local_resp_setor">Setor</label><input type="text" id="local_resp_setor" name="local_resp_setor" required></div>
+                <div class="form-group"><label for="local_resp_contato">Contato</label><input type="text" id="local_resp_contato" name="local_resp_contato" required></div>
+            </div>
+
+            <h3>5. Documentos Anexos</h3>
+            <div class="form-group"><label for="doc_responsavel">Cópia do documento de identidade do responsável</label><input type="file" id="doc_responsavel" name="doc_responsavel" required></div>
+            <div class="form-group"><label for="doc_autorizacao_espaco">Autorização do uso do espaço</label><input type="file" id="doc_autorizacao_espaco" name="doc_autorizacao_espaco"></div>
+            <div class="form-group"><label for="doc_alvara_empresa">Alvará Sanitário da Empresa</label><input type="file" id="doc_alvara_empresa" name="doc_alvara_empresa"></div>
+            <div class="form-group"><label for="doc_alvara_foodtrucks">Alvará dos food trucks ou trailers</label><input type="file" id="doc_alvara_foodtrucks" name="doc_alvara_foodtrucks"></div>
+
+            <h3>6. Declarações</h3>
+            <div class="form-group checkbox-group">
+                <div><input type="checkbox" id="dec1" required> <label for="dec1">Declaro estar ciente da legislação sanitária vigente.</label></div>
+                <div><input type="checkbox" id="dec2" required> <label for="dec2">Comprometo-me a manter as condições de higiene e segurança.</label></div>
+                <div><input type="checkbox" id="dec3" required> <label for="dec3">Estou ciente de que a Vigilância Sanitária poderá realizar vistoria.</label></div>
+            </div>
+
+            <h3>7. Assinatura</h3>
+            <div class="form-group"><label for="resumo_assinado">Anexar o Resumo Assinado (opcional)</label><input type="file" id="resumo_assinado" name="resumo_assinado"></div>
+
+            <br>
+            <button type="submit">Enviar Solicitação</button>
+        </form>
+        <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
+    </div>
+
+    <script>
+        // Lógica para mostrar/esconder campos condicionais
+        document.getElementById('evento_tipo').addEventListener('change', function() {
+            document.getElementById('evento_tipo_outro_group').classList.toggle('hidden', this.value !== 'Outro');
+        });
+        document.getElementById('servico_alimentos').addEventListener('change', function() {
+            document.getElementById('servico_alimentos_detalhes_group').classList.toggle('hidden', this.value !== 'Sim');
+        });
+    </script>
+</body>
+</html>

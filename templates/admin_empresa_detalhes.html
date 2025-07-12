@@ -1,0 +1,38 @@
+<!-- ================================================================== -->
+<!--    FICHEIRO: templates/admin_empresa_detalhes.html (NOVO FICHEIRO) -->
+<!-- ================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes da Empresa</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; background-color: #f8f9fa; }
+        .container { max-width: 900px; margin: auto; background-color: white; padding: 2em; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .info-item strong { display: block; color: #555; }
+        .section { margin-top: 30px; }
+        a { color: #007bff; text-decoration: none; }
+        .nav-link { display: inline-block; margin-bottom: 20px; font-weight: bold; }
+        .action-button { background-color: #007bff; color: white; padding: 10px 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ empresa.razao_social }}</h1>
+        <a href="{{ url_for('admin_empresas_lista') }}" class="nav-link">‹ Voltar para a Lista</a>
+        <a href="{{ url_for('admin_empresa_edit_form', id=empresa.id) }}" class="action-button">Editar Dados</a>
+
+        <div class="section">
+            <h2>Dados Cadastrais</h2>
+            <div class="grid">
+                <div class="info-item"><strong>CNPJ:</strong> {{ empresa.cnpj }}</div>
+                <div class="info-item"><strong>Nome Fantasia:</strong> {{ empresa.nome_fantasia or 'Não informado' }}</div>
+                <!-- ... (exibir todos os outros dados da empresa) -->
+            </div>
+        </div>
+        <!-- ... (secções para licenças e vistorias) -->
+    </div>
+</body>
+</html>

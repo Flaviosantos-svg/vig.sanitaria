@@ -1,0 +1,70 @@
+<!-- ================================================================== -->
+<!--           FICHEIRO: templates/form_denuncia.html                 -->
+<!-- ================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário de Denúncia</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3 { margin-top: 0; color: #c82333; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #333; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .checkbox-group div { margin-bottom: 5px; }
+        .checkbox-group label { font-weight: normal; }
+        button { padding: 12px 25px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; margin-right: 10px; }
+        .btn-submit { background-color: #c82333; }
+        .btn-reset { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Formulário de Denúncia</h1>
+        <p>A sua colaboração é fundamental para a saúde pública. Todas as denúncias são tratadas com sigilo.</p>
+        <hr>
+        <form action="{{ url_for('registrar_denuncia') }}" method="post">
+                <h3>1. Dados do Denunciante (Opcional)</h3>
+            <div class="form-group"><input type="checkbox" id="anonimato_check" name="anonimato"><label for="anonimato_check" style="display: inline; font-weight: normal;">Desejo manter o meu anonimato.</label></div>
+            <div id="info_denunciante">
+                <div class="grid-2"><div class="form-group"><label for="denunciante_nome">Nome Completo</label><input type="text" id="denunciante_nome" name="denunciante_nome"></div><div class="form-group"><label for="denunciante_telefone">Telefone</label><input type="text" id="denunciante_telefone" name="denunciante_telefone"></div></div>
+                <div class="form-group"><label for="denunciante_email">E-mail</label><input type="email" id="denunciante_email" name="denunciante_email"></div>
+            </div>
+            <h3>2. Informações do Local Denunciado</h3>
+            <div class="form-group"><label for="denunciado_nome">Nome do Estabelecimento (se conhecido)</label><input type="text" id="denunciado_nome" name="denunciado_nome"></div>
+            <div class="grid-2"><div class="form-group"><label>Rua / Avenida</label><input type="text" name="denunciado_rua" required></div><div class="form-group"><label>Número</label><input type="text" name="denunciado_numero" required></div></div>
+            <div class="form-group"><label for="denunciado_bairro">Bairro</label><input type="text" id="denunciado_bairro" name="denunciado_bairro" required></div>
+            <div class="form-group"><label for="denunciado_municipio">Município</label><input type="text" id="denunciado_municipio" name="denunciado_municipio" required></div>
+            <div class="form-group"><label for="denunciado_ponto_ref">Ponto de Referência</label><input type="text" id="denunciado_ponto_ref" name="denunciado_ponto_ref"></div>
+            <div class="form-group"><label>Tipo de Local</label><select name="denunciado_tipo_local"><option value="Comércio de Alimentos">Comércio de Alimentos</option><option value="Clínica / Consultório">Clínica / Consultório</option><option value="Farmácia">Farmácia</option><option value="Indústria">Indústria</option><option value="Residência">Residência</option><option value="Evento">Evento</option><option value="Outro">Outro</option></select></div>
+            <h3>3. Motivo da Denúncia</h3>
+            <div class="form-group checkbox-group"><label>Classificação do Problema (pode marcar mais de um):</label><div><input type="checkbox" name="motivo_classificacao" value="Alimentos estragados"> Alimentos estragados ou vencidos</div><div><input type="checkbox" name="motivo_classificacao" value="Falta de higiene"> Falta de higiene no local</div><div><input type="checkbox" name="motivo_classificacao" value="Manipulação irregular de alimentos"> Manipulação irregular de alimentos</div><div><input type="checkbox" name="motivo_classificacao" value="Atendimentos clandestinos"> Atendimentos de saúde clandestinos</div><div><input type="checkbox" name="motivo_classificacao" value="Falta de licença"> Falta de licença sanitária</div><div><input type="checkbox" name="motivo_classificacao" value="Vetores"> Maus odores / Vetores (baratas, ratos etc.)</div><div><input type="checkbox" name="motivo_classificacao" value="Criação de Animais"> Maus odores / Criação de Animais (Aves, Porco, Etc.)</div><div><input type="checkbox" name="motivo_classificacao" value="Produtos vencidos"> Produtos vencidos ou sem rótulo</div><div><input type="checkbox" name="motivo_classificacao" value="Outro"> Outro</div></div>
+            <div class="form-group"><label for="motivo_descricao">Descrição Detalhada dos Fatos (obrigatório)</label><textarea id="motivo_descricao" name="motivo_descricao" rows="5" required></textarea></div>
+            <h3>4. Evidências / Anexos (opcional)</h3>
+            <div class="form-group"><label for="anexos">Enviar fotos, vídeos, documentos, etc.</label><input type="file" id="anexos" name="anexos" multiple></div>
+            <h3>5. Declaração</h3>
+            <div class="form-group"><input type="checkbox" id="declaracao_ciencia" required> <label for="declaracao_ciencia" style="font-weight:normal;">Declaro que as informações prestadas são verdadeiras e compreendo que a denúncia será analisada.</label></div>
+            <br>
+            <button type="submit" class="btn-submit">Enviar Denúncia</button>
+            <button type="reset" class="btn-reset">Limpar Campos</button>
+        </form>
+        <a href="/">‹ Voltar ao Menu Principal</a>
+    </div>
+    <script>
+        document.getElementById('anonimato_check').addEventListener('change', function() {
+            const infoDiv = document.getElementById('info_denunciante');
+            const inputs = infoDiv.querySelectorAll('input');
+            const isChecked = this.checked;
+            infoDiv.style.display = isChecked ? 'none' : 'block';
+            inputs.forEach(input => {
+                input.required = !isChecked;
+                if(isChecked) { input.value = ''; }
+            });
+        });
+    </script>
+</body>
+</html>

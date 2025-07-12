@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Licenças</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3 { margin-top: 0; color: #0056b3; }
+        .filters { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .filter-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; align-items: center; }
+        .search-options label { display: block; margin-bottom: 10px; }
+        .search-fields > div { margin-bottom: 10px; }
+        .hidden { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .action-links a { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consulta de Licenças</h1>
+        <form method="post">
+            <div class="filters">
+                <h3>Filtros de Consulta</h3>
+                <div class="filter-grid">
+                    <div class="search-options">
+                        <label><input type="radio" name="search_by" value="cnpj" checked> CNPJ</label>
+                        <label><input type="radio" name="search_by" value="numero_licenca"> Número da Licença</label>
+                        <label><input type="radio" name="search_by" value="razao_social"> Razão Social</label>
+                    </div>
+                    <div class="search-fields">
+                        <div id="field_cnpj"><input type="text" name="query_text" placeholder="00.000.000/0000-00"></div>
+                        <div id="field_numero_licenca" class="hidden"><input type="text" placeholder="VS-000123-2025"></div>
+                        <div id="field_razao_social" class="hidden"><input type="text" placeholder="Nome da empresa"></div>
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <label>Situação da Licença:</label>
+                    <label><input type="checkbox" name="situacao_licenca" value="Ativa"> Ativa</label>
+                    <label><input type="checkbox" name="situacao_licenca" value="Vencida"> Vencida</label>
+                    <label><input type="checkbox" name="situacao_licenca" value="Cancelada"> Cancelada</label>
+                    <label><input type="checkbox" name="situacao_licenca" value="Dispensada"> Dispensada</label>
+                </div>
+                <hr>
+                <div>
+                    <label>Período de Emissão:</label>
+                    De: <input type="date" name="data_de">
+                    Até: <input type="date" name="data_ate">
+                </div>
+                <br>
+                <button type="submit">🔍 Consultar</button>
+                <button type="reset">🔄 Limpar Campos</button>
+            </div>
+        </form>
+
+        <h3>Resultados da Consulta</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nº Licença</th>
+                    <th>Empresa</th>
+                    <th>CNPJ</th>
+                    <th>Validade</th>
+                    <th>Situação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for licenca in licencas %}
+                <tr>
+                    <td>{{ licenca.numero_licenca }}</td>
+                    <td>{{ licenca.razao_social }}</td>
+                    <td>{{ licenca.cnpj }}</td>
+                    <td>{{ licenca.data_validade }}</td>
+                    <td>{{ licenca.situacao }}</td>
+                    <td class="action-links">
+                        <a href="#">🔍 Detalhes</a>
+                        <!-- Botão de impressão só aparece para licenças ativas -->
+                        {% if licenca.situacao == 'Ativa' %}
+                            <a href="{{ url_for('imprimir_alvara', licenca_id=licenca.id) }}" target="_blank">📄 Imprimir Alvará</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">Nenhum resultado encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/">‹ Voltar ao Menu Principal</a>
+    </div>
+
+    <script>
+        const searchOptions = document.querySelectorAll('input[name="search_by"]');
+        const searchFields = document.querySelector('.search-fields');
+
+        function toggleSearchField() {
+            const selectedValue = document.querySelector('input[name="search_by"]:checked').value;
+            Array.from(searchFields.children).forEach(div => {
+                div.classList.add('hidden');
+                div.querySelector('input').name = '';
+            });
+            const fieldToShow = document.getElementById(`field_${selectedValue}`);
+            if (fieldToShow) {
+                fieldToShow.classList.remove('hidden');
+                fieldToShow.querySelector('input').name = 'query_text';
+                fieldToShow.querySelector('input').focus();
+            }
+        }
+        searchOptions.forEach(radio => radio.addEventListener('change', toggleSearchField));
+        toggleSearchField();
+    </script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Requerimento de Licença para Instituições</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3 { margin-top: 0; color: #0056b3; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group input[readonly] { background-color: #e9ecef; cursor: not-allowed; }
+        .form-group-radio label { display: inline-block; margin-right: 20px; font-weight: normal;}
+        button { padding: 12px 25px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; }
+        .btn-search { background-color: #007bff; }
+        .btn-submit { background-color: #28a745; margin-top: 20px; }
+        .alert { padding: 15px; border-radius: 4px; margin-top: 15px; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Licença Sanitária para Instituições Públicas</h1>
+        
+        <div class="form-group">
+            <label for="cnpj">Para começar, digite o CNPJ da Instituição:</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="cnpj" name="cnpj_busca" required>
+                <button type="button" id="btn_buscar_cnpj" class="btn-search">Buscar</button>
+            </div>
+            <span id="loading" class="hidden">Buscando...</span>
+            <div id="cnpj-error" class="alert alert-danger hidden"></div>
+        </div>
+        <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
+        <hr>
+
+        <form id="form_dados_empresa" action="#" method="post" enctype="multipart/form-data" class="hidden">
+            
+            <h3>1. Dados da Instituição (preenchido automaticamente)</h3>
+            <div class="grid-2">
+                <div class="form-group"><label>Razão Social</label><input type="text" id="razao_social" name="razao_social" readonly></div>
+                <div class="form-group"><label>CNPJ</label><input type="text" id="cnpj_display" name="cnpj" readonly></div>
+            </div>
+
+            <div id="vinculo_geral_group" class="form-group">
+                <label>O Local é vinculado a um CNPJ geral?</label>
+                <div class="form-group-radio">
+                    <input type="radio" id="vinculo_sim" name="vinculo_geral" value="sim"> <label for="vinculo_sim">Sim</label>
+                    <input type="radio" id="vinculo_nao" name="vinculo_geral" value="nao" checked> <label for="vinculo_nao">Não</label>
+                </div>
+            </div>
+            
+            <div id="local_anexo_group" class="hidden">
+                 <div class="form-group"><label for="local_nome">Nome do Local/Estabelecimento</label><input type="text" id="local_nome" name="local_nome"></div>
+                 <div class="grid-2">
+                    <div class="form-group"><label for="local_endereco">Endereço do Local</label><input type="text" id="local_endereco" name="local_endereco"></div>
+                    <div class="form-group"><label for="local_numero">Número</label><input type="text" id="local_numero" name="local_numero"></div>
+                 </div>
+            </div>
+
+            <h3>2. Tipo de Atividade e Contato</h3>
+            <div class="form-group">
+                <label for="tipo_licenca">Tipo de Licença</label>
+                <select id="tipo_licenca" name="tipo_licenca" required>
+                    <option value="">-- Selecione --</option>
+                    <option value="UBS">Unidade Básica de Saúde (UBS)</option>
+                    <option value="Consultorio Odontologico">Consultório Odontológico</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label for="contato_telefone">Telefone de Contato</label><input type="text" id="contato_telefone" name="contato_telefone" required></div>
+                <div class="form-group"><label for="contato_email">E-mail de Contato</label><input type="email" id="contato_email" name="contato_email" required></div>
+            </div>
+
+            <h3>3. Responsável Técnico</h3>
+            <div class="form-group"><label>O Local Necessita de Responsável Técnico?</label><select id="necessita_rt" name="necessita_rt"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+            
+            <div id="rt_group" class="grid-3 hidden">
+                <div class="form-group"><label for="rt_nome">Nome</label><input type="text" id="rt_nome" name="rt_nome"></div>
+                <div class="form-group"><label for="rt_cpf">CPF</label><input type="text" id="rt_cpf" name="rt_cpf"></div>
+                <div class="form-group"><label for="rt_conselho">Nº do Conselho</label><input type="text" id="rt_conselho" name="rt_conselho"></div>
+            </div>
+            
+            <div class="form-group hidden" id="anexo_rt_group">
+                <label for="anexo_declaracao_rt">Anexar Declaração de Resp. Técnica do Profissional</label>
+                <input type="file" id="anexo_declaracao_rt" name="anexo_declaracao_rt">
+            </div>
+
+            <button type="submit" class="btn-submit">Enviar Solicitação</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- ELEMENTOS DO DOM ---
+            const btnBuscarCnpj = document.getElementById('btn_buscar_cnpj');
+            const cnpjInput = document.getElementById('cnpj');
+            const loadingSpan = document.getElementById('loading');
+            const cnpjErrorDiv = document.getElementById('cnpj-error');
+            const formDadosEmpresa = document.getElementById('form_dados_empresa');
+
+            // --- LÓGICA DE BUSCA DO CNPJ ---
+            btnBuscarCnpj.addEventListener('click', async function() {
+                const cnpj = cnpjInput.value;
+                if (!cnpj) {
+                    alert('Por favor, digite um CNPJ.');
+                    return;
+                }
+                
+                loadingSpan.classList.remove('hidden');
+                cnpjErrorDiv.classList.add('hidden');
+                formDadosEmpresa.classList.add('hidden');
+
+                try {
+                    // Chama a nossa API no Flask
+                    const response = await fetch(`/api/consulta-cnpj/${cnpj}`);
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.erro || 'Erro ao buscar CNPJ.');
+                    }
+                    
+                    // Preenche os campos do formulário
+                    document.getElementById('razao_social').value = data.razao_social || '';
+                    document.getElementById('cnpj_display').value = data.cnpj || '';
+
+                    // Exibe o formulário principal
+                    formDadosEmpresa.classList.remove('hidden');
+
+                } catch (error) {
+                    cnpjErrorDiv.textContent = error.message;
+                    cnpjErrorDiv.classList.remove('hidden');
+                } finally {
+                    loadingSpan.classList.add('hidden');
+                }
+            });
+            
+            // --- LÓGICA PARA MOSTRAR/ESCONDER CAMPOS ---
+            const necessitaRt = document.getElementById('necessita_rt');
+            const anexoRtGroup = document.getElementById('anexo_rt_group');
+            const rtGroup = document.getElementById('rt_group');
+
+            necessitaRt.addEventListener('change', function() {
+                const show = this.value === 'Sim';
+                rtGroup.classList.toggle('hidden', !show);
+                anexoRtGroup.classList.toggle('hidden', !show); // Lógica atualizada
+                rtGroup.querySelectorAll('input').forEach(input => input.required = show);
+                document.getElementById('anexo_declaracao_rt').required = show;
+            });
+            
+            // Lógica para a nova pergunta de vínculo
+            document.querySelectorAll('input[name="vinculo_geral"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const showAnexoFields = this.value === 'sim';
+                    document.getElementById('local_anexo_group').classList.toggle('hidden', !showAnexoFields);
+                    document.getElementById('local_anexo_group').querySelectorAll('input').forEach(input => input.required = showAnexoFields);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

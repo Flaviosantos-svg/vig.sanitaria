@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitação de Receituários</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 2em;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1, h3 {
+            color: #0056b3;
+            margin-top: 0;
+        }
+        h3 {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        /* Novos estilos para os itens de receituário */
+        .receituario-group {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .receituario-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .receituario-item:last-child {
+            margin-bottom: 0;
+        }
+        .receituario-item input[type="checkbox"] {
+            width: auto;
+            flex-shrink: 0;
+            transform: scale(1.2);
+        }
+        .receituario-item label {
+            flex-grow: 1;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        .receituario-item input[type="number"] {
+            width: 100px;
+            flex-shrink: 0;
+        }
+        .receituario-item input[type="number"]:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Solicitação de Receituários Controlados</h1>
+        
+        <form method="POST" action="{{ url_for('salvar_solicitacao_receituario') }}" enctype="multipart/form-data">
+            
+            <h3>1. Dados do Local Solicitante</h3>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="cnpj_local">CNPJ</label>
+                    <input type="text" id="cnpj_local" name="cnpj_local" required>
+                </div>
+                <div class="form-group">
+                    <label for="nome_local">Nome do Estabelecimento</label>
+                    <input type="text" id="nome_local" name="nome_local" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="endereco_local">Endereço</label>
+                <input type="text" id="endereco_local" name="endereco_local" required>
+            </div>
+            <div class="grid-2">
+                 <div class="form-group">
+                    <label for="numero_local">Número</label>
+                    <input type="text" id="numero_local" name="numero_local" required>
+                </div>
+                <div class="form-group">
+                    <label for="contato_local">Telefone do Local</label>
+                    <input type="text" id="contato_local" name="contato_local" required>
+                </div>
+            </div>
+
+            <h3>2. Dados do Profissional Solicitante</h3>
+            <div class="form-group">
+                <label for="nome_profissional">Nome Completo</label>
+                <input type="text" id="nome_profissional" name="nome_profissional" required>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="cpf_profissional">CPF</label>
+                    <input type="text" id="cpf_profissional" name="cpf_profissional" required>
+                </div>
+                <div class="form-group">
+                    <label for="conselho_profissional">Nº do Conselho (Ex: CRM, CRO, CRMV)</label>
+                    <input type="text" id="conselho_profissional" name="conselho_profissional" required>
+                </div>
+            </div>
+             <div class="grid-2">
+                <div class="form-group">
+                    <label for="telefone_contato">Telefone para Contato</label>
+                    <input type="text" id="telefone_contato" name="telefone_contato" required>
+                </div>
+                <div class="form-group">
+                    <label for="email_contato">E-mail</label>
+                    <input type="email" id="email_contato" name="email_contato" required>
+                </div>
+            </div>
+
+            <!-- SEÇÃO MODIFICADA -->
+            <h3>3. Detalhes da Solicitação</h3>
+            <div class="form-group">
+                <label>Selecione os tipos de receituário e informe a quantidade de blocos:</label>
+                <div class="receituario-group">
+                    <div class="receituario-item">
+                        <input type="checkbox" id="tipo_a" name="tipo_receituario" value="A_amarela">
+                        <label for="tipo_a">Notificação de Receita "A" (Amarela)</label>
+                        <input type="number" id="quantidade_a" name="quantidade_a" min="1" placeholder="Qtde." disabled>
+                    </div>
+                    <div class="receituario-item">
+                        <input type="checkbox" id="tipo_b1" name="tipo_receituario" value="B_azul">
+                        <label for="tipo_b1 ">Notificação de Receita "B" (Azul)</label>
+                        <input type="number" id="quantidade_b1" name="quantidade_b" min="1" placeholder="Qtde." disabled>
+                    </div>
+                    <div class="receituario-item">
+                        <input type="checkbox" id="tipo_b2" name="tipo_receituario" value="B_azul">
+                        <label for="tipo_b2 ">Notificação de Receita "B2 Sibutramina" (Azul)</label>
+                        <input type="number" id="quantidade_b2" name="quantidade_b" min="2" placeholder="Qtde." disabled>
+                    </div>
+                    <div class="receituario-item">
+                        <input type="checkbox" id="tipo_c" name="tipo_receituario" value="C_branca">
+                        <label for="tipo_c">Receituário de Controle Especial (Branco)</label>
+                        <input type="number" id="quantidade_c" name="quantidade_c" min="1" placeholder="Qtde." disabled>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Enviar Solicitação</button>
+        </form>
+
+        <a href="{{ url_for('index') }}" class="back-link">‹ Voltar à Página Principal</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- LÓGICA PARA RECEITUÁRIOS ---
+            document.querySelectorAll('.receituario-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // Encontra o input de quantidade no mesmo grupo
+                    const quantityInput = this.closest('.receituario-item').querySelector('input[type="number"]');
+                    if (quantityInput) {
+                        quantityInput.disabled = !this.checked; // Habilita/desabilita o campo
+                        quantityInput.required = this.checked;  // Torna obrigatório se marcado
+                        if (!this.checked) {
+                            quantityInput.value = ''; // Limpa o valor se desmarcar
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

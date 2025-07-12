@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Vistoria e Fiscalização</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #0056b3; }
+        h3 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top: 25px; }
+        fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        legend { font-weight: 600; font-size: 1.2em; color: #0056b3; padding: 0 10px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; }
+        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; margin-bottom: 15px; }
+        textarea { resize: vertical; min-height: 100px; }
+        .radio-group label, .checkbox-group label { display: inline-block; margin-right: 20px; font-weight: normal; }
+        .radio-group input, .checkbox-group input { margin-right: 5px; }
+        .form-group { margin-bottom: 20px; }
+        .submit-btn { display: block; width: 100%; padding: 15px; background-color: #28a745; color: white; font-size: 1.2em; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
+        .submit-btn:hover { background-color: #218838; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Vistoria / Fiscalização</h1>
+        
+        <form action="{{ url_for('vistorias_fiscalizacoes') }}" method="post" enctype="multipart/form-data">
+            
+            <fieldset>
+                <legend>🔹 Identificação do Estabelecimento</legend>
+                
+                <div class="form-group">
+                    <label for="nome_estabelecimento">Nome do Estabelecimento:</label>
+                    <input type="text" id="nome_estabelecimento" name="nome_estabelecimento" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cnpj_cpf">CNPJ ou CPF:</label>
+                    <input type="text" id="cnpj_cpf" name="cnpj_cpf">
+                </div>
+                
+                <div class="form-group">
+                    <label>Tipo de Atividade:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="tipo_atividade" value="alimentacao"> Alimentação</label>
+                        <label><input type="radio" name="tipo_atividade" value="estetica"> Estética / Beleza</label>
+                        <label><input type="radio" name="tipo_atividade" value="saude"> Saúde / Consultório / Clínica</label>
+                        <label><input type="radio" name="tipo_atividade" value="farmacia"> Farmácia / Drogaria</label>
+                        <br>
+                        <label><input type="radio" name="tipo_atividade" value="outros"> Outros:</label>
+                        <input type="text" name="tipo_atividade_outros" placeholder="Especifique se marcou 'Outros'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="endereco">Endereço Completo:</label>
+                    <input type="text" id="endereco" name="endereco">
+                </div>
+
+                <div class="form-group">
+                    <label for="bairro">Bairro:</label>
+                    <input type="text" id="bairro" name="bairro">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone / WhatsApp:</label>
+                    <input type="text" id="telefone" name="telefone">
+                </div>
+
+                <div class="form-group">
+                    <label for="responsavel_tecnico">Responsável Técnico (se houver):</label>
+                    <input type="text" id="responsavel_tecnico" name="responsavel_tecnico">
+                </div>
+
+                <div class="form-group">
+                    <label for="registro_rt">Registro do RT (CRF, CRO, etc):</label>
+                    <input type="text" id="registro_rt" name="registro_rt">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>🔹 Itens Avaliados na Vistoria</legend>
+                
+                <h3>1. Estrutura Física:</h3>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="item_limpeza"> Limpeza adequada do ambiente</label><br>
+                    <label><input type="checkbox" name="item_paredes_pisos"> Paredes e pisos laváveis e em bom estado</label><br>
+                    <label><input type="checkbox" name="item_ventilacao"> Ventilação adequada</label><br>
+                    <label><input type="checkbox" name="item_iluminacao"> Iluminação suficiente</label><br>
+                    <label><input type="checkbox" name="item_sanitarios"> Presença de sanitários em condições adequadas</label>
+                </div>
+
+                <h3>2. Manipulação e Higiene:</h3>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="item_epis"> Uso de EPIs pelos funcionários</label><br>
+                    <label><input type="checkbox" name="item_lavagem_maos"> Lavagem adequada das mãos</label><br>
+                    <label><input type="checkbox" name="item_manipulacao_correta"> Manipulação correta de alimentos/produtos</label><br>
+                    <label><input type="checkbox" name="item_validade_rotulagem"> Produtos com validade e rotulagem adequada</label>
+                </div>
+                
+                <h3>3. Documentação e Licenças:</h3>
+                <div class="form-group">
+                    <label><input type="checkbox" name="doc_alvara"> Alvará de funcionamento</label>
+                    <input type="text" name="doc_alvara_numero" placeholder="Se sim, digite o número">
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" name="doc_licenca_sanitaria"> Licença sanitária válida</label>
+                    <input type="text" name="doc_licenca_sanitaria_numero" placeholder="Se sim, digite o número">
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" name="doc_dedetizacao"> Certificado de dedetização</label>
+                </div>
+                <div class="form-group radio-group">
+                    <label>Treinamento de boas práticas:</label><br>
+                    <label><input type="radio" name="doc_treinamento" value="sim"> Sim</label>
+                    <label><input type="radio" name="doc_treinamento" value="nao"> Não</label>
+                    <label><input type="radio" name="doc_treinamento" value="nao_se_aplica"> Não se Aplica</label>
+                </div>
+
+                <h3>4. Controle de Vetores e Pragas:</h3>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="vetor_ausencia_pragas"> Ausência de pragas visíveis</label><br>
+                    <label><input type="checkbox" name="vetor_controle_periodico"> Controle periódico comprovado</label>
+                </div>
+
+                <h3>5. Resíduos e descarte:</h3>
+                <div class="form-group radio-group">
+                    <label>Descarte correto de resíduos comuns e infectantes:</label><br>
+                    <label><input type="radio" name="residuos_descarte" value="sim"> Sim</label>
+                    <label><input type="radio" name="residuos_descarte" value="nao"> Não</label>
+                    <label><input type="radio" name="residuos_descarte" value="nao_se_aplica"> Não se Aplica</label>
+                </div>
+                 <div class="form-group radio-group">
+                    <label>Coleta regular dos resíduos:</label><br>
+                    <label><input type="radio" name="residuos_coleta" value="sim"> Sim</label>
+                    <label><input type="radio" name="residuos_coleta" value="nao"> Não</label>
+                    <label><input type="radio" name="residuos_coleta" value="nao_se_aplica"> Não se Aplica</label>
+                </div>
+                 <div class="form-group radio-group">
+                    <label>Perfuro cortantes descartados em coletores adequados:</label><br>
+                    <label><input type="radio" name="residuos_perfuro" value="sim"> Sim</label>
+                    <label><input type="radio" name="residuos_perfuro" value="nao"> Não</label>
+                    <label><input type="radio" name="residuos_perfuro" value="nao_se_aplica"> Não se Aplica</label>
+                </div>
+                
+                <h3>6. Outras não conformidades observadas:</h3>
+                <div class="form-group">
+                    <textarea name="outras_nao_conformidades" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="fotos">Fotos (anexar até 20):</label>
+                    <input type="file" id="fotos" name="fotos" multiple accept="image/*">
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>🔹 Check List Específico</legend>
+                <div class="form-group">
+                    <label for="checklist">Buscar por Check List pré-cadastrado:</label>
+                    <select id="checklist" name="checklist">
+                        <option value="">Selecione um checklist...</option>
+                        <option value="cl_restaurante">Checklist para Restaurantes</option>
+                        <option value="cl_salao_beleza">Checklist para Salões de Beleza</option>
+                        <option value="cl_consultorio">Checklist para Consultórios</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>🔹 Classificação da Vistoria</legend>
+                <div class="radio-group">
+                    <label><input type="radio" name="classificacao_vistoria" value="apto" required> Apto – Conforme com as exigências sanitárias</label><br>
+                    <label><input type="radio" name="classificacao_vistoria" value="apto_recomendacoes"> Apto com recomendações – Pequenas adequações necessárias</label><br>
+                    <label><input type="radio" name="classificacao_vistoria" value="inapto"> Inapto – Irregularidades sanitárias graves</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>🔹 Providências Recomendadas</legend>
+                <div class="form-group">
+                    <textarea name="providencias" rows="4"></textarea>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>🔹 Conclusão</legend>
+                <div class="form-group">
+                    <label for="data_retorno">Data do retorno (se necessário):</label>
+                    <input type="date" id="data_retorno" name="data_retorno">
+                </div>
+
+                <div class="form-group">
+                    <label for="fiscais">Fiscais:</label>
+                    <select id="fiscais" name="fiscais" multiple required>
+                        <option value="fiscal_1">Fiscal 1 - Fulano de Tal</option>
+                        <option value="fiscal_2">Fiscal 2 - Ciclana da Silva</option>
+                        <option value="fiscal_3">Fiscal 3 - Beltrano Souza</option>
+                    </select>
+                    <small>Segure 'Ctrl' (ou 'Cmd' no Mac) para selecionar mais de um.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Assinatura do Responsável pelo Estabelecimento:</label>
+                    <div id="signature-pad" style="border: 1px dashed #ccc; height: 150px; width: 100%;">
+                        [Área para Assinatura Digital]
+                    </div>
+                </div>
+            </fieldset>
+                <legend>✅ Ações Pós-Atendimento</legend>
+                <div class="checkbox-group">
+                    <p>Após salvar, deseja gerar um documento?</p>
+                    <label><input type="checkbox" name="gerar_notificacao" value="sim"> Gerar Notificação</label>
+                    <label><input type="checkbox" name="gerar_auto_infracao" value="sim"> Gerar Auto de Infração</label>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="submit-btn">Gerar Relatório da Vistoria</button>
+        </form>
+
+        <a href="{{ url_for('vistorias_denuncias') }}" class="back-link">Voltar ao Menu</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!-- ================================================================== -->
+<!--      FICHEIRO: templates/form_anuidade.html (NOVO FICHEIRO)        -->
+<!-- ================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Requerimento de Anuidade</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3, h4 { margin-top: 0; color: #0056b3; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group input[readonly] { background-color: #e9ecef; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border: 1px solid #ffeeba; padding: 15px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Requerimento de Anuidade</h1>
+        
+        <!-- Formulário para buscar a empresa primeiro -->
+        <form method="post" action="{{ url_for('anuidade') }}">
+            <div class="form-group">
+                <label for="cnpj">Para começar, digite o CNPJ da empresa:</label>
+                <input type="text" id="cnpj" name="cnpj" required>
+            </div>
+            <button type="submit">Buscar Empresa</button>
+        </form>
+        <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
+        <hr>
+
+        <!-- Se a empresa for encontrada, mostra o formulário completo -->
+        {% if empresa %}
+        <form action="{{ url_for('salvar_anuidade', id=empresa.id) }}" method="post" enctype="multipart/form-data">
+            
+            <h3>Dados da Empresa: {{ empresa.razao_social }}</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Razão Social</label>
+                    <input type="text" value="{{ empresa.razao_social }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>CNPJ</label>
+                    <input type="text" value="{{ empresa.cnpj }}" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="alvara_anterior">Número do Alvará Anterior</label>
+                <input type="text" id="alvara_anterior" name="alvara_anterior" value="{{ empresa.alvara_anterior or '' }}">
+            </div>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="data_abertura">Data de Abertura da Empresa</label>
+                    <input type="date" id="data_abertura" name="data_abertura" value="{{ empresa.data_abertura or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="tipo_local">A empresa possui estabelecimento físico?</label>
+                    <select id="tipo_local" name="tipo_local">
+                        <option value="com_local" {% if empresa.tipo_local == 'com_local' %}selected{% endif %}>Sim, com estabelecimento</option>
+                        <option value="sem_local" {% if empresa.tipo_local == 'sem_local' %}selected{% endif %}>Não, sem estabelecimento</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Reutiliza a mesma estrutura de anexos do formulário de abertura -->
+            <h3>Anexos</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Anexar Declaração de R.T (se aplicável)</label>
+                    <input type="file" name="anexo_rt">
+                </div>
+                <div class="form-group">
+                    <label>Anexar AFE (se aplicável)</label>
+                    <input type="file" name="anexo_afe">
+                </div>
+                <div class="form-group">
+                    <label>Anexar Comprovantes de Pagamento</label>
+                    <input type="file" name="anexo_pagamento" multiple>
+                </div>
+            </div>
+
+            <br>
+            <button type="submit">Enviar Requerimento de Anuidade</button>
+        </form>
+        {% elif request.method == 'POST' %}
+            <p class="alert-warning">Nenhuma empresa encontrada com o CNPJ informado.</p>
+        {% endif %}
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<form method="POST" action="{{ url_for('emitir_alvara', solicitacao_id=solicitacao.id) }}">
+    <h3>Emitir Alvará</h3>
+
+    <p><strong>Data de Emissão:</strong> {{ data_emissao.strftime('%d/%m/%Y') }}</p>
+
+    <label for="data_validade">Data de Validade:</label>
+    <input type="date" id="data_validade" name="data_validade" value="{{ data_validade_default }}">
+
+    <button type="submit">Emitir</button>
+</form>

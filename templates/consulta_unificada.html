@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acompanhar e Consultar</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 2em;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 30px;
+        }
+        .tab-nav button {
+            padding: 15px 25px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #6c757d;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab-nav button.active {
+            color: #0056b3;
+            border-bottom-color: #0056b3;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e9ecef;
+            margin: 30px 0;
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .alert-warning {
+            padding: 15px; margin-bottom: 20px; border: 1px solid #ffeeba;
+            border-radius: 4px; color: #856404; background-color: #fff3cd; text-align: center;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+
+        .btn-print { display: block; width: fit-content;
+    margin: 20px auto 0 auto;
+    padding: 12px 25px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+.btn-print:hover {
+    background-color: #218838;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Acompanhar e Consultar</h1>
+
+        <!-- Abas de Navegação -->
+        <div class="tab-nav">
+            <button class="tab-btn" data-tab="protocolo">Acompanhar Solicitação</button>
+            <button class="tab-btn" data-tab="licenca">Consultar Licença Emitida</button>
+        </div>
+
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Conteúdo da Aba 1: Busca por Protocolo -->
+        <div id="tab-protocolo" class="tab-content">
+            <form method="POST" action="{{ url_for('consulta_unificada') }}">
+                <input type="hidden" name="search_type" value="protocolo">
+                <div class="form-group">
+                    <label for="protocolo">Digite o número do seu protocolo:</label>
+                    <input type="text" id="protocolo" name="protocolo" required placeholder="Ex: VISA-20250712004500">
+                </div>
+                <button type="submit" class="btn-submit">Consultar Protocolo</button>
+            </form>
+        </div>
+
+        <!-- Conteúdo da Aba 2: Busca por Licença -->
+        <div id="tab-licenca" class="tab-content">
+            <form method="POST" action="{{ url_for('consulta_unificada') }}">
+                <input type="hidden" name="search_type" value="licenca">
+                <div class="form-group">
+                    <label for="cnpj">Digite o CNPJ da empresa:</label>
+                    <input type="text" id="cnpj" name="cnpj" required placeholder="00.000.000/0000-00">
+                </div>
+                <!-- Você pode adicionar os outros filtros (Razão Social, etc.) aqui -->
+                <button type="submit" class="btn-submit">Consultar Licença</button>
+            </form>
+        </div>
+
+        <!-- Área de Resultados -->
+        {% if solicitacao or licencas %}
+            <hr>
+            <div class="result-box">
+                <h3>Resultado da Consulta</h3>
+                {% if solicitacao %}
+                    <p><strong>Protocolo:</strong> {{ solicitacao.protocolo }}</p>
+                    <p><strong>Data da Solicitação:</strong> {{ solicitacao.data_solicitacao }}</p>
+                    <p><strong>Status Atual:</strong> {{ solicitacao.status }}</p>
+                    {% if solicitacao.justificativa_status %}
+                        <p><strong>Observações:</strong> {{ solicitacao.justificativa_status }}</p>
+                    {% endif %}
+
+                    <!-- ▼▼▼ ADICIONE ESTE BLOCO DE CÓDIGO ▼▼▼ -->
+        {% if solicitacao.status == 'Aprovado' %}
+             <hr>
+            <a href="{{ url_for('imprimir_documento', protocolo=solicitacao.protocolo) }}" class="btn-print" target="_blank">
+        📄 Imprimir
+        
+        </a>
+            {% endif %}
+        <!-- ▲▲▲ FIM DO BLOCO PARA ADICIONAR ▲▲▲ -->
+                {% elif licencas %}
+                    <table>
+                        <thead>
+                            <tr><th>Nº Licença</th><th>Empresa</th><th>Validade</th><th>Situação</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for licenca in licencas %}
+                            <tr>
+                                <td>{{ licenca.numero_licenca }}</td>
+                                <td>{{ licenca.razao_social }}</td>
+                                <td>{{ licenca.data_validade }}</td>
+                                <td>{{ licenca.situacao }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('index') }}" style="display:block; text-align:center; margin-top:30px;">‹ Voltar</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+            // Mantém a aba ativa após o envio do formulário
+            const activeTabId = 'tab-{{ search_type }}'; 
+
+            function switchTab(tabId) {
+                contents.forEach(content => {
+                    content.classList.toggle('active', content.id === tabId);
+                });
+                tabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabId.replace('tab-', ''));
+                });
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab('tab-' + tab.dataset.tab);
+                });
+            });
+
+            // Ativa a aba correta na carga da página
+            switchTab(activeTabId);
+        });
+    </script>
+</body>
+</html>

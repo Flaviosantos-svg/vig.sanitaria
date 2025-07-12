@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Vigilância Sanitária{% endblock %}
+
+{% block content %}
+    <h2>Dashboard Principal</h2>
+    <p>Bem-vindo ao painel de controlo do Sistema de Vigilância Sanitária.</p>
+    
+    <div class="dashboard-widgets">
+        <div class="widget">
+            <h3><i class="fas fa-building"></i> Estabelecimentos</h3>
+            <p>Gerir empresas, autônomos e outros estabelecimentos cadastrados.</p>
+            <a href="#" class="button">Ver Todos</a>
+        </div>
+        <div class="widget">
+            <h3><i class="fas fa-file-alt"></i> Licenças</h3>
+            <p>Controlar o estado de alvarás sanitários, licenças e renovações.</p>
+            <a href="#" class="button">Ver Todas</a>
+        </div>
+        <div class="widget">
+            <h3><i class="fas fa-clipboard-check"></i> Fiscalizações</h3>
+            <p>Agendar, registar e consultar o resultado de vistorias e fiscalizações.</p>
+            <a href="#" class="button">Ver Todas</a>
+        </div>
+        <div class="widget">
+            <h3><i class="fas fa-bullhorn"></i> Denúncias</h3>
+            <p>Registar e acompanhar denúncias feitas pela comunidade.</p>
+            <a href="#" class="button">Ver Todas</a>
+        </div>
+    </div>
+
+    <style>
+        .dashboard-widgets {
+            display: grid;
+            /* Cria colunas flexíveis que se ajustam ao tamanho da tela */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; /* Espaço entre os blocos */
+            margin-top: 30px;
+        }
+        .widget {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .widget h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #0056b3; /* Azul do cabeçalho */
+        }
+        .widget h3 i {
+            margin-right: 10px; /* Espaço entre o ícone e o texto */
+        }
+        .widget p {
+            flex-grow: 1; /* Faz o parágrafo ocupar o espaço disponível */
+            color: #555;
+            line-height: 1.6;
+        }
+        .widget .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            display: inline-block;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .widget .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acompanhar Solicitação</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2em;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e9ecef;
+            margin: 30px 0;
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .result-box h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .result-box p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .result-box strong {
+            color: #0056b3;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .alert-warning {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Acompanhar Situação da Solicitação</h1>
+
+        <!-- Bloco para exibir mensagens de erro (flash) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('consulta_status') }}">
+            <div class="form-group">
+                <label for="protocolo">Digite o número do seu protocolo:</label>
+                <input type="text" id="protocolo" name="protocolo" required placeholder="Ex: VISA-20250712004500">
+            </div>
+            <button type="submit">Consultar</button>
+        </form>
+        
+        {% if solicitacao %}
+            <hr>
+            <div class="result-box">
+                <h3>Resultado da Consulta</h3>
+                <p><strong>Protocolo:</strong> {{ solicitacao.protocolo }}</p>
+                <p><strong>Data da Solicitação:</strong> {{ solicitacao.data_solicitacao }}</p>
+                <p><strong>Status Atual:</strong> {{ solicitacao.status }}</p>
+                {% if solicitacao.justificativa_status %}
+                    <p><strong>Observações da Vigilância:</strong> {{ solicitacao.justificativa_status }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('index') }}" class="back-link">‹ Voltar à Página Principal</a>
+    </div>
+</body>
+</html>

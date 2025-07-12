@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração</title>
+    <style>
+        /* Reset e Fontes */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            color: #4A5568;
+        }
+
+        /* Header */
+        .header {
+            background-color: #ffffff;
+            color: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header .logout-btn {
+            color: #4A5568;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+        .header .logout-btn:hover {
+            background-color: #EDF2F7;
+            border-color: #CBD5E0;
+        }
+
+        /* Container Principal */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .welcome-message {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .welcome-message h2 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        /* Grid do Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Estilo dos Cards */
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: #2D3748;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        .card-icon {
+            background-color: #EBF4FF;
+            color: #3B82F6;
+            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .card-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        .card-content h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .card-content p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Dashboard</h1>
+        <div class="user-info">
+            <span>Olá, <strong>{{ session.user_name or 'Admin' }}</strong></span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="welcome-message">
+            <h2>Bem-vindo(a) ao Painel de Administração</h2>
+            <p>Selecione uma das opções abaixo para gerenciar o sistema.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <!-- Card: Analisar Solicitações -->
+            <a href="{{ url_for('admin_solicitacoes') }}" class="card">
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08H4.125a2.25 2.25 0 00-2.25 2.25v12.585c0 1.242 1.008 2.25 2.25 2.25h3.75M12.75 3v.375c0 .621.504 1.125 1.125 1.125h2.25c.621 0 1.125-.504 1.125-1.125V3m-3.75 0h-1.5a1.125 1.125 0 00-1.125 1.125v.375c0 .621.504 1.125 1.125 1.125h1.5c.621 0 1.125-.504 1.125-1.125v-.375A1.125 1.125 0 0012.75 3z" /></svg>
+                </div>
+                <div class="card-content">
+                    <h3>Analisar Solicitações</h3>
+                    <p>Aprove, negue ou peça exigências para novos pedidos.</p>
+                </div>
+            </a>
+
+            <!-- Card: Consultar Empresas -->
+            <a href="{{ url_for('admin_empresas_lista') }}" class="card">
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
+                </div>
+                <div class="card-content">
+                    <h3>Consultar Empresas</h3>
+                    <p>Visualize a base de dados de empresas cadastradas.</p>
+                </div>
+            </a>
+
+            <!-- Card: Relatórios -->
+            <a href="{{ url_for('admin_relatorios') }}" class="card">
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A2.25 2.25 0 011.5 18.75v-5.625zM16.5 13.125c0-1.125.75-2.062 1.75-2.188a48.547 48.547 0 011.75 0c1 .126 1.75 1.063 1.75 2.188v5.625A2.25 2.25 0 0118.375 21h-2.25A2.25 2.25 0 0113.5 18.75v-5.625zM12 3v18" /></svg>
+                </div>
+                <div class="card-content">
+                    <h3>Relatórios</h3>
+                    <p>Gere estatísticas e visualize dados consolidados.</p>
+                </div>
+            </a>
+
+            <!-- Card: Gerenciar Funcionários -->
+            <a href="#" class="card"> <!-- Substitua '#' pelo url_for correto -->
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-2.257 9.337 9.337 0 00-2.625-3.372M15 19.128v-3.372c0-.621-.504-1.125-1.125-1.125H12.25c-.621 0-1.125.504-1.125 1.125v3.372m0 0a3 3 0 01-3 3H7.25a3 3 0 01-3-3v-3.372c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v3.372m0 0a3 3 0 003 3h.008a3 3 0 003-3zM9.75 6.375a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </div>
+                <div class="card-content">
+                    <h3>Gerenciar Funcionários</h3>
+                    <p>Adicione, edite ou remova usuários do sistema.</p>
+                </div>
+            </a>
+
+             <!-- Card: Gerenciar CNAE -->
+            <a href="{{ url_for('admin_cnae_lista') }}" class="card">
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-1.007 1.11-1.226M10.343 3.94a3.75 3.75 0 01-3.75 3.75m3.75-3.75a3.75 3.75 0 00-3.75 3.75M19.5 13.5a3.75 3.75 0 01-3.75 3.75m3.75-3.75a3.75 3.75 0 00-3.75 3.75m-9.75 0h9.75M19.5 13.5a3.75 3.75 0 01-3.75 3.75M10.5 13.5a3.75 3.75 0 01-3.75 3.75m3.75-3.75a3.75 3.75 0 00-3.75 3.75M10.5 13.5h9.75m-9.75 0a3.75 3.75 0 013.75-3.75m-3.75 3.75a3.75 3.75 0 003.75-3.75M4.5 19.5a3.75 3.75 0 013.75-3.75m-3.75 3.75a3.75 3.75 0 003.75-3.75m-3.75 3.75h9.75M19.5 4.5a3.75 3.75 0 01-3.75 3.75M19.5 4.5a3.75 3.75 0 00-3.75 3.75M4.5 4.5a3.75 3.75 0 013.75 3.75m-3.75 3.75a3.75 3.75 0 003.75-3.75" /></svg>
+                </div>
+                <div class="card-content">
+                    <h3>Configurações (CNAE)</h3>
+                    <p>Gerencie as regras e exigências do sistema.</p>
+                </div>
+            </a>
+            <!-- ... informações da solicitação ... -->
+                {% if status == 'Liberado' %}
+             <a href="{{ url_for('imprimir_licenca', id=licenca_id) }}" target="_blank">Imprimir Licença para Evento</a>
+            {% else %}
+                    <p>Licença ainda não liberada.</p>
+                    {% endif %}
+            </a>
+
+        </div>
+    </main>
+</body>
+</html>

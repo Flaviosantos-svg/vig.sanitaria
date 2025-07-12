@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Alvará Sanitário - {{ alvara.numero_licenca }}</title>
+    <style>
+        @media print {
+            body { -webkit-print-color-adjust: exact; }
+            .no-print { display: none; }
+        }
+        body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 1.5cm; }
+        .alvara-container { border: 5px double #000; padding: 1cm; text-align: center; }
+        .header { text-align: center; margin-bottom: 1cm; }
+        .header img { max-width: 100px; }
+        .header h1 { margin: 0; font-size: 22pt; }
+        .header h2 { margin: 5px 0; font-size: 16pt; font-weight: normal; }
+        .title { font-size: 24pt; font-weight: bold; margin: 1cm 0; display: block; }
+        .content { text-align: left; font-size: 12pt; line-height: 1.6; }
+        .content p { margin: 10px 0; }
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border: 1px solid #ccc; padding: 15px; margin: 1cm 0; }
+        .data-item strong { display: block; font-size: 10pt; color: #555; }
+        .footer { margin-top: 2cm; display: flex; justify-content: space-around; align-items: flex-end; }
+        .signature { text-align: center; }
+        .signature .line { border-top: 1px solid #000; width: 250px; margin: 0 auto; padding-top: 5px; }
+        .qr-code { text-align: center; }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="alvara-container">
+        <header class="header">
+            <!-- Substituir pelo caminho para o brasão do seu município -->
+            <img src="https://via.placeholder.com/100" alt="Brasão do Município">
+            <h1>PREFEITURA MUNICIPAL DE [NOME DA CIDADE]</h1>
+            <h2>SECRETARIA MUNICIPAL DE SAÚDE</h2>
+            <h3>VIGILÂNCIA SANITÁRIA</h3>
+        </header>
+
+        <span class="title">ALVARÁ SANITÁRIO</span>
+
+        <div class="content">
+            <p>
+                A Vigilância Sanitária do Município de [Nome da Cidade], no uso de suas atribuições legais, concede a presente Licença Sanitária de Funcionamento ao estabelecimento abaixo identificado, por ter cumprido as exigências da legislação sanitária vigente.
+            </p>
+        </div>
+
+        <div class="data-grid">
+            <div class="data-item">
+                <strong>RAZÃO SOCIAL:</strong>
+                <span>{{ alvara.razao_social }}</span>
+            </div>
+            <div class="data-item">
+                <strong>NOME FANTASIA:</strong>
+                <span>{{ alvara.nome_fantasia or alvara.razao_social }}</span>
+            </div>
+            <div class="data-item">
+                <strong>CNPJ:</strong>
+                <span>{{ alvara.cnpj }}</span>
+            </div>
+             <div class="data-item">
+                <strong>CNAE PRINCIPAL:</strong>
+                <span>{{ alvara.cnae_principal }}</span>
+            </div>
+            <div class="data-item" style="grid-column: 1 / -1;">
+                <strong>ENDEREÇO:</strong>
+                <span>{{ alvara.endereco_rua }}, Nº {{ alvara.endereco_numero }}, {{ alvara.endereco_bairro }}</span>
+            </div>
+            <div class="data-item">
+                <strong>NÚMERO DA LICENÇA:</strong>
+                <span>{{ alvara.numero_licenca }}</span>
+            </div>
+            <div class="data-item">
+                <strong>PROCESSO Nº:</strong>
+                <span>[Número do Processo aqui]</span>
+            </div>
+            <div class="data-item">
+                <strong>DATA DE EMISSÃO:</strong>
+                <span>{{ alvara.data_emissao }}</span>
+            </div>
+            <div class="data-item">
+                <strong>DATA DE VALIDADE:</strong>
+                <span>{{ alvara.data_validade }}</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <p>Este documento deverá ser mantido em local visível ao público. A sua validade está condicionada à manutenção das condições higiénico-sanitárias que justificaram a sua emissão.</p>
+        </div>
+
+        <footer class="footer">
+            <div class="qr-code">
+                <!-- Imagem do QR Code pode ser gerada dinamicamente aqui -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=URL_DE_VALIDACAO_AQUI" alt="QR Code de Validação">
+                <p style="font-size: 8pt;">Valide este documento</p>
+            </div>
+            <div class="signature">
+                <div class="line">[Nome do Coordenador(a) da VISA]</div>
+                <span>Coordenador(a) da Vigilância Sanitária</span>
+            </div>
+        </footer>
+    </div>
+    <div class="no-print" style="text-align:center; margin-top:20px;">
+        <button onclick="window.print()">Imprimir Alvará</button>
+        <a href="javascript:window.close()">Fechar</a>
+    </div>
+</body>
+</html>

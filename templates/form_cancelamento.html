@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Requerimento de Cancelamento</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3 { margin-top: 0; color: #dc3545; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group input[readonly] { background-color: #e9ecef; }
+        .checkbox-group div { margin-bottom: 5px; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border: 1px solid #ffeeba; padding: 15px; border-radius: 4px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Requerimento de Cancelamento</h1>
+        
+        <form method="post" action="{{ url_for('cancelamento') }}">
+            <div class="form-group">
+                <label for="cnpj">Para começar, digite o CNPJ da empresa:</label>
+                <input type="text" id="cnpj" name="cnpj" required>
+            </div>
+            <button type="submit">Buscar Empresa</button>
+        </form>
+        <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
+        <hr>
+
+        {% if empresa %}
+        <form action="{{ url_for('salvar_cancelamento', id=empresa.id) }}" method="post" enctype="multipart/form-data">
+            
+            <h3>Dados da Empresa a ser Cancelada</h3>
+            <div class="form-group">
+                <label>Razão Social</label>
+                <input type="text" value="{{ empresa.razao_social }}" readonly>
+            </div>
+            <div class="form-group">
+                <label>CNPJ</label>
+                <input type="text" value="{{ empresa.cnpj }}" readonly>
+            </div>
+
+            <h3>Motivo do Cancelamento</h3>
+            <div class="form-group">
+                <select id="motivo_cancelamento" name="motivo_cancelamento" required>
+                    <option value="">-- Selecione um motivo --</option>
+                    <option value="Encerramento das atividades">Encerramento das atividades da empresa</option>
+                    <option value="Mudança de endereço">Mudança de endereço para outro município</option>
+                    <option value="Alteração de CNAE">Alteração de CNAE que não exige mais licença</option>
+                    <option value="Erro no cadastro">Erro no cadastro anterior</option>
+                    <option value="Outro">Outro (especificar)</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="outro_motivo_group">
+                <label for="outro_motivo">Por favor, especifique o motivo:</label>
+                <textarea id="outro_motivo" name="outro_motivo" rows="3"></textarea>
+            </div>
+
+            <h3>Documentos Comprobatórios</h3>
+            <div class="form-group">
+                <label for="documentos">Anexar documentos (Contrato de encerramento, baixa de inscrição, etc.)</label>
+                <input type="file" id="documentos" name="documentos_comprobatorios" multiple required>
+            </div>
+
+            <br>
+            <button type="submit" style="background-color: #dc3545;">Confirmar Cancelamento</button>
+        </form>
+        {% elif request.method == 'POST' %}
+            <p class="alert-warning">Nenhuma empresa encontrada com o CNPJ informado.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById('motivo_cancelamento').addEventListener('change', function() {
+            const outroMotivoGroup = document.getElementById('outro_motivo_group');
+            if (this.value === 'Outro') {
+                outroMotivoGroup.classList.remove('hidden');
+                document.getElementById('outro_motivo').required = true;
+            } else {
+                outroMotivoGroup.classList.add('hidden');
+                document.getElementById('outro_motivo').required = false;
+            }
+        });
+    </script>
+</body>
+</html>

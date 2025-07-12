@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliar Solicitação</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f6f9; margin: 0; }
+        .header { background-color: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 900px; margin: 30px auto; }
+        .details-card, .action-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .card-header { padding: 20px; border-bottom: 1px solid #e9ecef; }
+        .card-header h1, .card-header h2 { margin: 0; font-size: 1.3em; color: #333; }
+        .card-body { padding: 20px; }
+        .detail-group { display: grid; grid-template-columns: 200px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f1f1; align-items: center; }
+        .detail-group:last-child { border-bottom: none; }
+        .detail-group strong { color: #555; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; }
+        .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; box-sizing: border-box; }
+        .btn-submit { background-color: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Análise de Solicitação</h1>
+        <a href="{{ url_for('admin_solicitacoes') }}" style="color: white;">‹ Voltar para a Lista</a>
+    </div>
+
+    <div class="container">
+        <!-- Card com os detalhes da solicitação -->
+        <div class="details-card">
+            <div class="card-header">
+                <h2>Detalhes da Solicitação (Protocolo: {{ solicitacao.protocolo }})</h2>
+            </div>
+            <div class="card-body">
+                <div class="detail-group">
+                    <strong>Tipo de Solicitação:</strong>
+                    <span>{{ solicitacao.tipo_solicitacao }}</span>
+                </div>
+                <div class="detail-group">
+                    <strong>Data da Solicitação:</strong>
+                    <span>{{ solicitacao.data_solicitacao }}</span>
+                </div>
+                <div class="detail-group">
+                    <strong>Status Atual:</strong>
+                    <span>{{ solicitacao.status }}</span>
+                </div>
+                <hr>
+                <!-- Loop para exibir todos os dados do formulário dinamicamente -->
+                {% for chave, valor in dados.items() %}
+                    <div class="detail-group">
+                        <strong>{{ chave.replace('_', ' ')|title }}:</strong>
+                        <span>{{ valor }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Card com as ações do fiscal -->
+        <div class="action-card">
+            <div class="card-header"><h2>Ação do Fiscal</h2></div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="status">Alterar Status para:</label>
+                        <select id="status" name="status">
+                            <option value="Em análise" {% if solicitacao.status == 'Em análise' %}selected{% endif %}>Em análise</option>
+                            <option value="Aprovado" {% if solicitacao.status == 'Aprovado' %}selected{% endif %}>Aprovado</option>
+                            <option value="Em exigência" {% if solicitacao.status == 'Em exigência' %}selected{% endif %}>Em exigência</option>
+                            <option value="Negado" {% if solicitacao.status == 'Negado' %}selected{% endif %}>Negado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="justificativa_status">Justificativa / Motivo (Obrigatório para 'Em exigência' ou 'Negado'):</label>
+                        <textarea id="justificativa_status" name="justificativa_status" rows="4">{{ solicitacao.justificativa_status or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Salvar Alteração</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

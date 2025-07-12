@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Requerimento de Dispensa de Licença</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3 { margin-top: 0; color: #0056b3; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group input[readonly] { background-color: #e9ecef; }
+        .checkbox-group div { margin-bottom: 5px; }
+        button { padding: 12px 25px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border: 1px solid #ffeeba; padding: 15px; border-radius: 4px; }
+        .hidden { display: none; }
+        #aviso_risco { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Requerimento de Dispensa de Licença Sanitária</h1>
+        
+        <form method="post" action="{{ url_for('dispensa_licenca') }}">
+            <div class="form-group">
+                <label for="cnpj">Para começar, digite o CNPJ da empresa:</label>
+                <input type="text" id="cnpj" name="cnpj" required>
+            </div>
+            <button type="submit" style="background-color: #007bff;">Buscar Empresa</button>
+        </form>
+        <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
+        <hr>
+
+        {% if empresa %}
+        <form action="{{ url_for('salvar_dispensa', id=empresa.id) }}" method="post" enctype="multipart/form-data">
+            
+            <h3>1. Dados da Empresa</h3>
+            <div class="grid-2">
+                <div class="form-group"><label>Razão Social</label><input type="text" value="{{ empresa.razao_social }}" readonly></div>
+                <div class="form-group"><label>CNPJ</label><input type="text" value="{{ empresa.cnpj }}" readonly></div>
+            </div>
+            
+            <h3>2. Dados do Responsável Legal</h3>
+            <div class="grid-2">
+                <div class="form-group"><label>Nome Completo</label><input type="text" value="{{ empresa.responsavel_legal_nome }}" readonly></div>
+                <div class="form-group"><label>CPF</label><input type="text" value="{{ empresa.responsavel_legal_cpf }}" readonly></div>
+            </div>
+
+            <h3>3. Informações sobre a Atividade</h3>
+            <div class="form-group"><label for="descricao_atividade">Descrição resumida da atividade</label><textarea id="descricao_atividade" name="descricao_atividade" rows="3"></textarea></div>
+            <div class="form-group">
+                <label>A empresa realiza alguma das seguintes atividades?</label>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" name="atividades_risco" value="Manipulação de alimentos"> Manipulação de alimentos ou bebidas</div>
+                    <div><input type="checkbox" name="atividades_risco" value="Atendimentos à saúde"> Atendimentos à saúde (consultório, clínica, etc.)</div>
+                    <div><input type="checkbox" name="atividades_risco" value="Estética invasiva"> Estética com procedimentos invasivos</div>
+                    <div><input type="checkbox" name="atividades_risco" value="Medicamentos controlados"> Atividades com medicamentos ou produtos controlados</div>
+                    <div><input type="checkbox" name="atividades_risco" value="Fabricação/armazenamento de produtos de saúde"> Fabricação ou armazenamento de produtos de interesse à saúde</div>
+                </div>
+                <p id="aviso_risco" class="hidden">Atenção: A atividade selecionada exige licença sanitária. Este requerimento de dispensa pode ser indeferido.</p>
+            </div>
+            <div class="form-group"><label for="justificativa">Justificativa para solicitação da dispensa</label><textarea id="justificativa" name="justificativa" rows="4"></textarea></div>
+
+            <h3>4. Documentos Anexos</h3>
+            <div class="form-group"><label for="doc_cnpj">Cartão CNPJ</label><input type="file" id="doc_cnpj" name="doc_cnpj" required></div>
+            <div class="form-group"><label for="doc_contrato">Contrato Social ou Requerimento de Empresário</label><input type="file" id="doc_contrato" name="doc_contrato" required></div>
+            <div class="form-group"><label for="doc_endereco">Comprovante de Endereço</label><input type="file" id="doc_endereco" name="doc_endereco" required></div>
+            <div class="form-group"><label for="doc_declaracao">Declaração de Atividade</label><input type="file" id="doc_declaracao" name="doc_declaracao" required></div>
+
+            <h3>5. Declaração</h3>
+            <div class="form-group"><input type="checkbox" id="declaracao_ciencia" required> <label for="declaracao_ciencia" style="font-weight:normal;">Declaro, sob as penas da lei, que as informações prestadas são verdadeiras.</label></div>
+
+            <h3>6. Assinatura</h3>
+            <div class="form-group"><label for="solicitante_nome">Nome do responsável pela solicitação</label><input type="text" id="solicitante_nome" name="solicitante_nome" required></div>
+            <div class="form-group"><label for="doc_resumo">Anexar o Resumo Assinado</label><input type="file" id="doc_resumo" name="doc_resumo"></div>
+            
+            <br>
+            <button type="submit">Enviar Solicitação</button>
+        </form>
+        {% elif request.method == 'POST' %}
+            <p class="alert-warning">Nenhuma empresa encontrada com o CNPJ informado.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        const checkboxes = document.querySelectorAll('input[name="atividades_risco"]');
+        const avisoRisco = document.getElementById('aviso_risco');
+        const justificativa = document.getElementById('justificativa');
+
+        function verificarRisco() {
+            const algumaMarcada = Array.from(checkboxes).some(cb => cb.checked);
+            avisoRisco.classList.toggle('hidden', !algumaMarcada);
+            justificativa.required = !algumaMarcada;
+        }
+
+        checkboxes.forEach(cb => cb.addEventListener('change', verificarRisco));
+        
+        // Verifica no carregamento inicial, caso a página seja recarregada
+        verificarRisco();
+    </script>
+</body>
+</html>

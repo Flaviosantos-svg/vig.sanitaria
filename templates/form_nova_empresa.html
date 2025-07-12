@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Requerimento de Abertura de Empresa</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 2em;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h3, h4 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+        h3 {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        h4 {
+            margin-top: 20px;
+            color: #333;
+            font-size: 1.1em;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="file"],
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group-radio label {
+            display: inline;
+            font-weight: normal;
+            margin-right: 15px;
+        }
+        .form-group-radio input[type="radio"] {
+            width: auto;
+            margin-right: 5px;
+        }
+        .form-group input[readonly] {
+            background-color: #e9ecef;
+        }
+        .cnpj-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cnpj-group input {
+            flex-grow: 1;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+        #api-status {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        #cnae-list {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Requerimento de Abertura de Empresa</h1>
+        <form method="POST" action="{{ url_for('submeter_solicitacao') }}" enctype="multipart/form-data">
+            <input type="hidden" name="tipo_solicitacao" value="Abertura de Empresa">
+            <h3>Dados da Empresa</h3>
+            <div class="form-group">
+                <label for="cnpj">CNPJ</label>
+                <div class="cnpj-group">
+                    <input type="text" id="cnpj" name="cnpj" placeholder="Digite o CNPJ e clique em buscar" required>
+                    <button type="button" id="btn-buscar-cnpj">Buscar Dados</button>
+                    <span id="api-status"></span>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="form-group full-width">
+                    <label for="razao_social">Razão Social</label>
+                    <input type="text" id="razao_social" name="razao_social" readonly required>
+                </div>
+                <div class="form-group">
+                    <label for="nome_fantasia">Nome Fantasia</label>
+                    <input type="text" id="nome_fantasia" name="nome_fantasia" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="situacao_receita">Situação na Receita Federal</label>
+                    <input type="text" id="situacao_receita" name="situacao_receita" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>CNAEs Registrados</label>
+                <div id="cnae-list">Nenhum CNAE carregado.</div>
+                <input type="hidden" id="cnae_principal" name="cnae_principal">
+                <input type="hidden" id="cnaes_secundarios" name="cnaes_secundarios">
+            </div>
+            <div class="form-group">
+                <label>A empresa tem local físico para atendimento?</label>
+                <div class="form-group-radio">
+                    <input type="radio" id="local_sim" name="tem_local_fisico" value="sim" checked>
+                    <label for="local_sim">Sim</label>
+                    <input type="radio" id="local_nao" name="tem_local_fisico" value="nao">
+                    <label for="local_nao">Não</label>
+                </div>
+            </div>
+            <div id="endereco-group">
+                <h3>Endereço e Contato</h3>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Rua</label>
+                        <input type="text" id="endereco_rua" name="endereco_rua">
+                    </div>
+                    <div class="form-group">
+                        <label>Nº</label>
+                        <input type="text" id="endereco_numero" name="endereco_numero">
+                    </div>
+                    <div class="form-group">
+                        <label>Bairro</label>
+                        <input type="text" id="endereco_bairro" name="endereco_bairro">
+                    </div>
+                    <div class="form-group">
+                        <label>Cidade</label>
+                        <input type="text" id="endereco_cidade" name="endereco_cidade">
+                    </div>
+                    <div class="form-group">
+                        <label>CEP</label>
+                        <input type="text" id="endereco_cep" name="endereco_cep">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="text" id="telefone" name="telefone">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </div>
+            </div>
+            <h3>Responsáveis e Funcionamento</h3>
+            <h4>Responsável Legal</h4>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label for="responsavel_legal_nome">Nome do Resp. Legal</label>
+                    <input type="text" id="responsavel_legal_nome" name="responsavel_legal_nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="responsavel_legal_cpf">CPF</label>
+                    <input type="text" id="responsavel_legal_cpf" name="responsavel_legal_cpf" required>
+                </div>
+                <div class="form-group">
+                    <label for="responsavel_legal_tel">Telefone</label>
+                    <input type="text" id="responsavel_legal_tel" name="responsavel_legal_tel" required>
+                </div>
+            </div>
+            <h4>Responsável Técnico</h4>
+            <div class="form-group">
+                <input type="checkbox" id="mesmo_responsavel" name="mesmo_responsavel" style="width: auto;">
+                <label for="mesmo_responsavel" style="display: inline; font-weight: normal;">O Responsável Legal é o mesmo Responsável Técnico.</label>
+            </div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label for="responsavel_tecnico_nome">Nome do Resp. Técnico</label>
+                    <input type="text" id="responsavel_tecnico_nome" name="responsavel_tecnico_nome">
+                </div>
+                <div class="form-group">
+                    <label for="responsavel_tecnico_cpf">CPF</label>
+                    <input type="text" id="responsavel_tecnico_cpf" name="responsavel_tecnico_cpf">
+                </div>
+                <div class="form-group">
+                    <label for="responsavel_tecnico_tel">Telefone</label>
+                    <input type="text" id="responsavel_tecnico_tel" name="responsavel_tecnico_tel">
+                </div>
+            </div>
+            <h4>Horário de Funcionamento</h4>
+            <div class="form-group">
+                <input type="text" id="horario_funcionamento" name="horario_funcionamento" placeholder="Ex: Seg a Sex, 08:00 às 18:00">
+            </div>
+            <h3>Exigências e Anexos</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Empresa necessita de Responsável Técnico (R.T)?</label>
+                    <select id="necessita_rt" name="necessita_rt">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="anexo_rt_group">
+                    <label for="anexo_rt">Anexar Declaração de R.T</label>
+                    <input type="file" id="anexo_rt" name="anexo_rt">
+                </div>
+                <div class="form-group">
+                    <label>Venda de Medicamentos da Portaria 344/98?</label>
+                    <select id="vende_344" name="vende_344">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="anexo_afe_group">
+                    <label for="anexo_afe">Anexar AFE</label>
+                    <input type="file" id="anexo_afe" name="anexo_afe">
+                </div>
+                <div class="form-group">
+                    <label>Vendas de animais vivos?</label>
+                    <select id="vende_animais" name="vende_animais">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="anexo_rt_animais_group">
+                    <label for="anexo_rt_animais">Anexar declaração de R.T. (Veterinário)</label>
+                    <input type="file" id="anexo_rt_animais" name="anexo_rt_animais">
+                </div>
+                <div class="form-group full-width">
+                    <label for="anexo_pagamento">Anexar Comprovantes de Pagamento</label>
+                    <input type="file" id="anexo_pagamento" name="anexo_pagamento" multiple>
+                </div>
+            </div>
+            <br>
+            <button type="submit">Enviar Requerimento</button>
+        </form>
+        <a href="/">‹ Voltar ao Menu Principal</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica para anexos condicionais
+            document.getElementById('necessita_rt').addEventListener('change', function() {
+                document.getElementById('anexo_rt_group').classList.toggle('hidden', this.value === 'nao');
+            });
+            document.getElementById('vende_344').addEventListener('change', function() {
+                document.getElementById('anexo_afe_group').classList.toggle('hidden', this.value === 'nao');
+            });
+            document.getElementById('vende_animais').addEventListener('change', function() {
+                document.getElementById('anexo_rt_animais_group').classList.toggle('hidden', this.value === 'nao');
+            });
+
+            // Lógica para mostrar/esconder endereço
+            document.querySelectorAll('input[name="tem_local_fisico"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('endereco-group').classList.toggle('hidden', this.value === 'nao');
+                });
+            });
+
+            // Lógica para preencher dados do RT se for o mesmo que o Legal
+            document.getElementById('mesmo_responsavel').addEventListener('change', function() {
+                const nomeTecnico = document.getElementById('responsavel_tecnico_nome');
+                const cpfTecnico = document.getElementById('responsavel_tecnico_cpf');
+                const telTecnico = document.getElementById('responsavel_tecnico_tel');
+                const readOnlyState = this.checked;
+
+                nomeTecnico.value = readOnlyState ? document.getElementById('responsavel_legal_nome').value : '';
+                cpfTecnico.value = readOnlyState ? document.getElementById('responsavel_legal_cpf').value : '';
+                telTecnico.value = readOnlyState ? document.getElementById('responsavel_legal_tel').value : '';
+                
+                nomeTecnico.readOnly = readOnlyState;
+                cpfTecnico.readOnly = readOnlyState;
+                telTecnico.readOnly = readOnlyState;
+            });
+
+            // Lógica para buscar dados do CNPJ na API
+            document.getElementById('btn-buscar-cnpj').addEventListener('click', async function() {
+                const cnpj_sujo = document.getElementById('cnpj').value;
+                const statusEl = document.getElementById('api-status');
+
+                if (!cnpj_sujo) {
+                    statusEl.textContent = 'Digite um CNPJ.';
+                    statusEl.style.color = 'red';
+                    return;
+                }
+                const cnpj_limpo = cnpj_sujo.replace(/\D/g, '');
+
+                statusEl.textContent = 'Buscando...';
+                statusEl.style.color = 'orange';
+
+                try {
+                    const url = `https://brasilapi.com.br/api/cnpj/v1/${cnpj_limpo}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        statusEl.textContent = 'Dados carregados!';
+                        statusEl.style.color = 'green';
+
+                        // Preenche os campos do formulário com os dados da API
+                        document.getElementById('razao_social').value = data.razao_social || '';
+                        document.getElementById('nome_fantasia').value = data.nome_fantasia || '';
+                        document.getElementById('situacao_receita').value = data.descricao_situacao_cadastral || '';
+                        document.getElementById('endereco_rua').value = data.logradouro || '';
+                        document.getElementById('endereco_numero').value = data.numero || '';
+                        document.getElementById('endereco_bairro').value = data.bairro || '';
+                        document.getElementById('endereco_cidade').value = data.municipio || '';
+                        document.getElementById('endereco_cep').value = data.cep || '';
+                        document.getElementById('telefone').value = data.ddd_telefone_1 || data.ddd_telefone_2 || '';
+                        document.getElementById('email').value = data.email || '';
+                        
+                        // Exibe os CNAEs
+                        const cnaeListEl = document.getElementById('cnae-list');
+                        let cnaeHtml = '<strong>Principal:</strong> ' + (data.cnae_fiscal_descricao || 'N/A') + '<br>';
+                        if (data.cnaes_secundarios && data.cnaes_secundarios.length > 0) {
+                            cnaeHtml += '<strong>Secundários:</strong> ';
+                            cnaeHtml += data.cnaes_secundarios.map(c => c.descricao).join(', ');
+                        }
+                        cnaeListEl.innerHTML = cnaeHtml;
+
+                        // Guarda os códigos CNAE em campos hidden para enviar com o formulário
+                        document.getElementById('cnae_principal').value = data.cnae_fiscal || '';
+                        document.getElementById('cnaes_secundarios').value = JSON.stringify(data.cnaes_secundarios || []);
+
+                    } else {
+                        statusEl.textContent = `Erro: ${data.message || 'Não foi possível buscar os dados.'}`;
+                        statusEl.style.color = 'red';
+                    }
+                } catch (error) {
+                    statusEl.textContent = 'Erro de conexão.';
+                    statusEl.style.color = 'red';
+                    console.error('Erro na busca do CNPJ:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

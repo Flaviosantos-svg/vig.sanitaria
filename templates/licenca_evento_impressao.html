@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>Licença para Evento - Alvará Sanitário</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2cm;
+            color: #000;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2em;
+        }
+        .header h1 {
+            color: #0056b3;
+            margin-bottom: 0.2em;
+        }
+        .section {
+            margin-bottom: 1.5em;
+        }
+        h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 0.2em;
+            margin-bottom: 0.8em;
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1em;
+        }
+        td {
+            padding: 6px 10px;
+            border: 1px solid #444;
+            vertical-align: top;
+        }
+        td.label {
+            font-weight: bold;
+            background-color: #f0f2f5;
+            width: 30%;
+        }
+        .footer {
+            margin-top: 4em;
+            text-align: center;
+            font-size: 14px;
+            border-top: 1px solid #444;
+            padding-top: 1em;
+        }
+        .assinatura {
+            margin-top: 3em;
+            width: 300px;
+            border-top: 1px solid #000;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 0.5em;
+        }
+        @media print {
+            body {
+                margin: 1cm;
+            }
+            a {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Licença para Evento - Alvará Sanitário</h1>
+        <p>Vigilância Sanitária Municipal</p>
+        <p><em>Documento válido somente após aprovação e liberação do evento.</em></p>
+    </div>
+
+    <div class="section">
+        <h2>1. Dados do Responsável pela Organização</h2>
+        <table>
+            <tr>
+                <td class="label">Nome Completo</td>
+                <td>{{ organizador_nome }}</td>
+            </tr>
+            <tr>
+                <td class="label">CPF ou CNPJ</td>
+                <td>{{ organizador_doc }}</td>
+            </tr>
+            <tr>
+                <td class="label">Nome da Empresa</td>
+                <td>{{ organizador_empresa or "—" }}</td>
+            </tr>
+            <tr>
+                <td class="label">Telefone</td>
+                <td>{{ organizador_tel }}</td>
+            </tr>
+            <tr>
+                <td class="label">E-mail</td>
+                <td>{{ organizador_email }}</td>
+            </tr>
+            <tr>
+                <td class="label">Endereço Completo</td>
+                <td>{{ organizador_endereco }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>2. Informações do Evento</h2>
+        <table>
+            <tr>
+                <td class="label">Nome do Evento</td>
+                <td>{{ evento_nome }}</td>
+            </tr>
+            <tr>
+                <td class="label">Tipo de Evento</td>
+                <td>
+                    {{ evento_tipo }}
+                    {% if evento_tipo == "Outro" and evento_tipo_outro %}
+                        - {{ evento_tipo_outro }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Data de Início</td>
+                <td>{{ evento_data_inicio }}</td>
+            </tr>
+            <tr>
+                <td class="label">Data de Fim</td>
+                <td>{{ evento_data_fim }}</td>
+            </tr>
+            <tr>
+                <td class="label">Horário de Funcionamento</td>
+                <td>{{ evento_horario }}</td>
+            </tr>
+            <tr>
+                <td class="label">Local do Evento</td>
+                <td>{{ evento_local }}</td>
+            </tr>
+            <tr>
+                <td class="label">Público Estimado</td>
+                <td>{{ evento_publico_estimado }}</td>
+            </tr>
+            <tr>
+                <td class="label">Estrutura Temporária</td>
+                <td>
+                    {% set estruturas = [] %}
+                    {% if 'Tendas' in evento_estrutura_temp %}Tendas; {% endif %}
+                    {% if 'Palco' in evento_estrutura_temp %}Palco; {% endif %}
+                    {% if 'Banheiros químicos' in evento_estrutura_temp %}Banheiros químicos; {% endif %}
+                    {% if 'Cozinha' in evento_estrutura_temp %}Cozinha; {% endif %}
+                    {{ evento_estrutura_outro or '' }}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>3. Serviços e Atividades no Evento</h2>
+        <table>
+            <tr>
+                <td class="label">Manipulação de alimentos/bebidas</td>
+                <td>{{ servico_alimentos }}</td>
+            </tr>
+            {% if servico_alimentos == "Sim" %}
+            <tr>
+                <td class="label">Permissionários e produtos</td>
+                <td>{{ servico_alimentos_detalhes }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="label">Fornecimento de água potável</td>
+                <td>{{ servico_agua_potavel }}</td>
+            </tr>
+            <tr>
+                <td class="label">Controle de resíduos sólidos e lixo</td>
+                <td>{{ servico_residuos }}</td>
+            </tr>
+            <tr>
+                <td class="label">Número de sanitários disponíveis</td>
+                <td>{{ servico_sanitarios }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>4. Responsável pela Liberação do Local</h2>
+        <table>
+            <tr>
+                <td class="label">Nome Completo</td>
+                <td>{{ local_resp_nome }}</td>
+            </tr>
+            <tr>
+                <td class="label">CPF</td>
+                <td>{{ local_resp_cpf }}</td>
+            </tr>
+            <tr>
+                <td class="label">Setor</td>
+                <td>{{ local_resp_setor }}</td>
+            </tr>
+            <tr>
+                <td class="label">Contato</td>
+                <td>{{ local_resp_contato }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Este documento comprova a liberação da Licença para Evento conforme as normas da Vigilância Sanitária Municipal.</p>
+        <div class="assinatura">
+            <p><strong>Responsável Técnico</strong></p>
+            <p>____________________________________</p>
+            <p>Assinatura</p>
+        </div>
+        <p>Data de emissão: {{ data_emissao }}</p>
+        <p>Validade até: {{ data_validade }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Auto de Infração Sanitária</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f6f9; padding: 20px; }
+        .container { max-width: 850px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #b30000; }
+        fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        legend { font-weight: 600; font-size: 1.2em; color: #343a40; padding: 0 10px; }
+        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 500; }
+        input[type="text"], input[type="date"], input[type="time"], input[type="email"], select, textarea {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;
+        }
+        textarea { min-height: 120px; resize: vertical; }
+        .checkbox-group label { display: inline-block; margin-right: 20px; font-weight: normal; }
+        .static-text { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; line-height: 1.6; margin-top: 15px; }
+        .signature-pad { border: 2px dashed #ccc; height: 120px; text-align: center; line-height: 120px; color: #aaa; margin-top: 10px; }
+        .submit-btn { display: block; width: 100%; padding: 15px; background-color: #b30000; color: white; font-size: 1.2em; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>AUTO DE INFRAÇÃO SANITÁRIA</h2>
+        <h1>Nº {{ numero_auto_infracao }}</h1>
+
+        <form action="{{ url_for('auto_infracao') }}" method="post">
+            {% if dados_origem.id %}
+            <input type="hidden" name="origem_id" value="{{ dados_origem.id }}">
+            {% endif %}
+
+            <fieldset>
+                <legend>DADOS DO ESTABELECIMENTO OU INFRATOR</legend>
+                <label for="razao_social">Razão Social / Nome do Infrator:</label>
+                <input type="text" id="razao_social" name="razao_social" value="{{ dados_origem.nome_infrator or '' }}" required>
+                
+                <label for="nome_fantasia">Nome Fantasia (se houver):</label>
+                <input type="text" id="nome_fantasia" name="nome_fantasia">
+
+                <label for="cnpj_cpf">CNPJ / CPF:</label>
+                <input type="text" id="cnpj_cpf" name="cnpj_cpf">
+                
+                <label for="endereco">Endereço:</label>
+                <input type="text" id="endereco" name="endereco" value="{{ dados_origem.endereco or '' }}">
+                
+                <label for="bairro">Bairro:</label>
+                <input type="text" id="bairro" name="bairro">
+                
+                <label for="municipio">Município:</label>
+                <input type="text" id="municipio" name="municipio" value="Esperantina">
+                
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone">
+
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email">
+            </fieldset>
+
+            <fieldset>
+                <legend>DADOS DA INFRAÇÃO</legend>
+                <label for="data_infracao">Data da Infração:</label>
+                <input type="date" id="data_infracao" name="data_infracao" value="{{ hoje }}" required>
+
+                <label for="hora_infracao">Hora:</label>
+                <input type="time" id="hora_infracao" name="hora_infracao" required>
+
+                <label for="local_ocorrencia">Local da Ocorrência:</label>
+                <input type="text" id="local_ocorrencia" name="local_ocorrencia" value="{{ dados_origem.endereco or '' }}">
+                
+                <label for="descricao_infracao">Descrição da Infração:</label>
+                <textarea id="descricao_infracao" name="descricao_infracao" required>{{ dados_origem.descricao_infracao or '' }}</textarea>
+
+                <label for="fundamento_legal">Fundamento Legal Violado:</label>
+                <textarea id="fundamento_legal" name="fundamento_legal" placeholder="Ex: RDC 275/2002 da ANVISA, Lei Federal nº 6.437/77, etc."></textarea>
+            </fieldset>
+
+            <fieldset>
+                <legend>MEDIDAS APLICADAS</legend>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="medidas" value="notificacao"> Notificação</label>
+                    <label><input type="checkbox" name="medidas" value="advertencia"> Advertência</label>
+                    <label><input type="checkbox" name="medidas" value="auto_infracao" checked> Auto de Infração</label>
+                    <label><input type="checkbox" name="medidas" value="interdicao"> Interdição Parcial/Total</label>
+                    <label><input type="checkbox" name="medidas" value="apreensao"> Apreensão</label>
+                    <label><input type="checkbox" name="medidas" value="destruicao"> Destruição</label>
+                    <br><br>
+                    <label><input type="checkbox" name="medidas" value="outras"> Outras:</label>
+                    <input type="text" name="medidas_outras_texto" placeholder="Especifique">
+                </div>
+            </fieldset>
+            
+            <div class="static-text">
+                <strong>PRAZO PARA DEFESA:</strong> O autuado terá o prazo de 10 (dez) dias úteis, contados do recebimento deste Auto, para apresentar defesa junto à autoridade sanitária competente.
+            </div>
+
+            <fieldset>
+                <legend>DADOS DO FISCAL SANITÁRIO</legend>
+                <label for="fiscal_nome">Nome:</label>
+                <select id="fiscal_nome" name="fiscal_nome" required>
+                    {% for tecnico in tecnicos %}
+                    <option value="{{ tecnico.id }}">{{ tecnico.nome }}</option>
+                    {% endfor %}
+                </select>
+                <label>Matrícula / Registro:</label>
+                <input type="text" name="fiscal_matricula" readonly placeholder="Preenchido ao selecionar o fiscal">
+                <label>Assinatura:</label>
+                <div class="signature-pad">[Área para Assinatura Eletrônica do Fiscal]</div>
+            </fieldset>
+
+            <fieldset>
+                <legend>CIÊNCIA DO AUTUADO</legend>
+                <div class="static-text">Declaro que recebi cópia deste Auto de Infração e estou ciente do seu conteúdo.</div>
+                <label>Nome do responsável pelo estabelecimento:</label>
+                <input type="text" name="responsavel_nome">
+                <label>RG / CPF:</label>
+                <input type="text" name="responsavel_documento">
+                <label>Assinatura:</label>
+                <div class="signature-pad">[Área para Assinatura Eletrônica do Autuado]</div>
+                <label for="data_ciencia">Data:</label>
+                <input type="date" id="data_ciencia" name="data_ciencia" value="{{ hoje }}">
+                <div class="checkbox-group" style="margin-top: 15px;">
+                    <label><input type="checkbox" name="recusou_assinatura"> Recusou-se a assinar</label>
+                </div>
+            </fieldset>
+            
+            <button type="submit" class="submit-btn">Gerar Auto de Infração</button>
+        </form>
+    </div>
+</body>
+</html>

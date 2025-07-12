@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sucesso!</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            margin: 0; 
+            padding: 2em; 
+            background-color: #f4f6f9; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container { 
+            max-width: 600px; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .icon {
+            color: #28a745;
+            font-size: 5em;
+            line-height: 1;
+        }
+        h1 { 
+            color: #28a745; 
+            margin-top: 20px;
+        }
+        p {
+            font-size: 1.1em;
+            color: #555;
+        }
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✓</div>
+        <h1>Sucesso!</h1>
+        <p>{{ mensagem }}</p>
+        <a href="{{ url_for('index') }}">Voltar ao Menu Principal</a>
+    </div>
+</body>
+</html>

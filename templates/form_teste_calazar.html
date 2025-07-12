@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitação de Teste de Calazar</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 2em; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h3 { margin-top: 0; color: #0056b3; }
+        h3 { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .checkbox-label { display: inline; font-weight: normal; margin-left: 5px; }
+        button { padding: 12px 25px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Solicitação para Teste de Calazar (Leishmaniose)</h1>
+    <form action="{{ url_for('teste_calazar') }}" method="post">            
+            <h3>1. Dados do Proprietário</h3>
+            <div class="grid-2">
+                <div class="form-group"><label for="proprietario_nome">Nome Completo</label><input type="text" id="proprietario_nome" name="proprietario_nome" required></div>
+                <div class="form-group"><label for="proprietario_cpf">CPF</label><input type="text" id="proprietario_cpf" name="proprietario_cpf"></div>
+            </div>
+            <div class="form-group"><label for="proprietario_endereco">Endereço Completo</label><input type="text" id="proprietario_endereco" name="proprietario_endereco" required></div>
+            <div class="form-group"><label for="proprietario_telefone">Telefone</label><input type="text" id="proprietario_telefone" name="proprietario_telefone" required></div>
+
+            <h3>2. Dados do Animal</h3>
+            <div class="grid-3">
+                <div class="form-group"><label for="animal_nome">Nome do Animal</label><input type="text" id="animal_nome" name="animal_nome" required></div>
+                <div class="form-group"><label for="animal_especie">Espécie</label><input type="text" id="animal_especie" name="animal_especie" value="Canina" readonly></div>
+                <div class="form-group"><label for="animal_raca">Raça</label><input type="text" id="animal_raca" name="animal_raca" required></div>
+                <div class="form-group"><label for="animal_sexo">Sexo</label><select id="animal_sexo" name="animal_sexo"><option value="Macho">Macho</option><option value="Fêmea">Fêmea</option></select></div>
+                <div class="form-group"><label for="animal_idade">Idade</label><input type="text" id="animal_idade" name="animal_idade"></div>
+                <div class="form-group"><label for="animal_cor">Cor da Pelagem</label><input type="text" id="animal_cor" name="animal_cor"></div>
+            </div>
+            <div class="form-group"><label for="animal_foto">Foto do Animal (opcional)</label><input type="file" id="animal_foto" name="animal_foto"></div>
+
+            <h3>3. Informações Clínicas e Coleta</h3>
+            <div class="form-group"><label for="sinais_clinicos">Sinais Clínicos Apresentados</label><textarea id="sinais_clinicos" name="sinais_clinicos" rows="4" placeholder="Descreva os sintomas do animal..."></textarea></div>
+            
+            <!-- CAMPOS DE DATA E HORÁRIO ATUALIZADOS -->
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="data_coleta">Data Sugerida para Coleta</label>
+                    <input type="date" id="data_coleta" name="data_coleta" required>
+                </div>
+                <div class="form-group">
+                    <label for="horario_coleta">Horário Sugerido</label>
+                    <input type="time" id="horario_coleta" name="horario_coleta">
+                </div>
+            </div>
+
+            <h3>4. Declaração e Autorização</h3>
+            <div class="form-group">
+                <input type="checkbox" id="declaracao_autorizacao" name="declaracao_autorizacao" required>
+                <label for="declaracao_autorizacao" class="checkbox-label">
+                    Declaro que as informações prestadas são verdadeiras e autorizo a visita da equipe da Vigilância em Saúde para avaliação e coleta de material biológico, se necessário.
+                </label>
+            </div>
+
+            <br>
+            <button type="submit">Enviar Solicitação de Teste</button>
+        </form>
+        <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
+    </div>
+</body>
+</html>

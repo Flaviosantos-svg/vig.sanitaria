@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Funcionários</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciar Funcionários</h1>
+        <a href="{{ url_for('admin_add_funcionario_form') }}" class="btn btn-primary">Adicionar Novo Funcionário</a>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Matrícula</th>
+                    <th>Cargo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for func in funcionarios %}
+                <tr>
+                    <td>{{ func.nome }}</td>
+                    <td>{{ func.matricula }}</td>
+                    <td>{{ func.cargo }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('admin_edit_funcionario_form', funcionario_id=func.id) }}" class="btn btn-secondary">Editar</a>
+                        <form action="{{ url_for('admin_delete_funcionario', funcionario_id=func.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('admin_menu') }}" class="back-link">Voltar ao Menu Admin</a>
+    </div>
+</body>
+</html>
