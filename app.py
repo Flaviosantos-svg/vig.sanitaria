@@ -32,11 +32,9 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
-# ==================================================================
+
 # 2. CONFIGURAÇÃO E MANIPULAÇÃO DO BANCO DE DADOS (SQLite)
-# ==================================================================
 def get_db_connection():
-    """Cria e retorna uma conexão com o banco de dados."""
     conn = sqlite3.connect('vigilancia.db')
     conn.row_factory = sqlite3.Row
     return conn
@@ -242,8 +240,6 @@ def consulta_cnpj(cnpj):
         return jsonify(response.json())
     except requests.exceptions.RequestException:
         return jsonify({"erro": "CNPJ não encontrado ou API indisponível"}), 404
-
-
 # ==================================================================
 # 6. ROTAS DE AUTENTICAÇÃO E ÁREA ADMINISTRATIVA
 # ==================================================================
@@ -307,8 +303,6 @@ def admin_avaliar_solicitacao(id):
         
     dados_formulario = json.loads(solicitacao_raw['dados_formulario'])
     return render_template('admin_avaliacao.html', solicitacao=solicitacao_raw, dados=dados_formulario)
-
-
 # ==================================================================
 # 7. ROTAS PARA IMPRESSÃO E GERAÇÃO DE DOCUMENTOS
 # ==================================================================
@@ -357,10 +351,8 @@ def licenca_evento_pdf(protocolo):
     response.headers['Content-Disposition'] = f'inline; filename=licenca_{protocolo}.pdf'
     return response
 
-
-# ==================================================================
 # 8. PONTO DE ENTRADA PARA PRODUÇÃO (GUNICORN) E DESENVOLVIMENTO
-# ==================================================================
+
 def create_app():
     """
     Função 'Factory' que o Gunicorn usa para obter a aplicação.
@@ -370,7 +362,6 @@ def create_app():
     with app.app_context():
         setup_database()
     return app
-
 if __name__ == '__main__':
     """
     Este bloco só é executado quando você roda o arquivo diretamente
@@ -383,4 +374,3 @@ if __name__ == '__main__':
     with app.app_context():
         setup_database() # Garante que o DB está pronto antes de rodar
     app.run(debug=True, host="0.0.0.0", port=5001)
-
