@@ -23,7 +23,7 @@ def home():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-    
+
 # TADA E TEMPO
 @app.template_filter('datetimeformat')
 def datetimeformat(value, format='%d/%m/%Y'):
@@ -504,3 +504,5 @@ if __name__ == '__main__':
     setup_database()
     app.run(debug=True, port=5001)
     
+    if __name__ == "__main__":
+    app.run(debug=True)
