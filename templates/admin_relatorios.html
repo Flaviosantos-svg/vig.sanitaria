@@ -46,7 +46,8 @@
                         <td>{{ relatorio.tipo }}</td>
                         <td>{{ relatorio.alvo }}</td>
                         <td>{{ relatorio.agente }}</td>
-                        <td><a href="#" class="btn-view">Visualizar</a></td>
+                        <!-- CORREÇÃO: O link agora aponta para a página de avaliação da solicitação -->
+                        <td><a href="{{ url_for('admin_avaliar_solicitacao', id=relatorio.id) }}" class="btn-view">Visualizar</a></td>
                     </tr>
                     {% else %}
                     <tr>
@@ -76,7 +77,8 @@
                         <td>{{ relatorio.tipo }}</td>
                         <td>{{ relatorio.alvo }}</td>
                         <td>{{ relatorio.agente }}</td>
-                        <td><a href="#" class="btn-view">Visualizar</a></td>
+                        <!-- CORREÇÃO: O link agora aponta para a página de avaliação da solicitação -->
+                        <td><a href="{{ url_for('admin_avaliar_solicitacao', id=relatorio.id) }}" class="btn-view">Visualizar</a></td>
                     </tr>
                     {% else %}
                     <tr>

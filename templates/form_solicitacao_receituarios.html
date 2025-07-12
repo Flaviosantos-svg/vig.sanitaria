@@ -113,8 +113,8 @@
     <div class="container">
         <h1>Solicitação de Receituários Controlados</h1>
         
-        <form method="POST" action="{{ url_for('salvar_solicitacao_receituario') }}" enctype="multipart/form-data">
-            
+        <form method="POST" action="{{ url_for('submeter_solicitacao') }}">
+                    <input type="hidden" name="tipo_solicitacao" value="Solicitação de Receituários">
             <h3>1. Dados do Local Solicitante</h3>
             <div class="grid-2">
                 <div class="form-group">

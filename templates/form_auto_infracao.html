@@ -18,22 +18,23 @@
         .static-text { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; line-height: 1.6; margin-top: 15px; }
         .signature-pad { border: 2px dashed #ccc; height: 120px; text-align: center; line-height: 120px; color: #aaa; margin-top: 10px; }
         .submit-btn { display: block; width: 100%; padding: 15px; background-color: #b30000; color: white; font-size: 1.2em; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #007bff; text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="container">
+        <a href="{{ url_for('vistorias_denuncias') }}" class="back-link">&larr; Voltar ao Menu</a>
         <h2>AUTO DE INFRAÇÃO SANITÁRIA</h2>
-        <h1>Nº {{ numero_auto_infracao }}</h1>
-
-        <form action="{{ url_for('auto_infracao') }}" method="post">
-            {% if dados_origem.id %}
-            <input type="hidden" name="origem_id" value="{{ dados_origem.id }}">
-            {% endif %}
+        
+        <!-- CORREÇÃO: A action do formulário aponta para a rota unificada 'submeter_solicitacao' -->
+        <form action="{{ url_for('submeter_solicitacao') }}" method="post">
+            <!-- Campo oculto para identificar o tipo de solicitação -->
+            <input type="hidden" name="tipo_solicitacao" value="Emissão de Auto de Infração">
 
             <fieldset>
                 <legend>DADOS DO ESTABELECIMENTO OU INFRATOR</legend>
                 <label for="razao_social">Razão Social / Nome do Infrator:</label>
-                <input type="text" id="razao_social" name="razao_social" value="{{ dados_origem.nome_infrator or '' }}" required>
+                <input type="text" id="razao_social" name="razao_social" required>
                 
                 <label for="nome_fantasia">Nome Fantasia (se houver):</label>
                 <input type="text" id="nome_fantasia" name="nome_fantasia">
@@ -42,7 +43,7 @@
                 <input type="text" id="cnpj_cpf" name="cnpj_cpf">
                 
                 <label for="endereco">Endereço:</label>
-                <input type="text" id="endereco" name="endereco" value="{{ dados_origem.endereco or '' }}">
+                <input type="text" id="endereco" name="endereco">
                 
                 <label for="bairro">Bairro:</label>
                 <input type="text" id="bairro" name="bairro">
@@ -60,16 +61,16 @@
             <fieldset>
                 <legend>DADOS DA INFRAÇÃO</legend>
                 <label for="data_infracao">Data da Infração:</label>
-                <input type="date" id="data_infracao" name="data_infracao" value="{{ hoje }}" required>
+                <input type="date" id="data_infracao" name="data_infracao" required>
 
                 <label for="hora_infracao">Hora:</label>
                 <input type="time" id="hora_infracao" name="hora_infracao" required>
 
                 <label for="local_ocorrencia">Local da Ocorrência:</label>
-                <input type="text" id="local_ocorrencia" name="local_ocorrencia" value="{{ dados_origem.endereco or '' }}">
+                <input type="text" id="local_ocorrencia" name="local_ocorrencia">
                 
                 <label for="descricao_infracao">Descrição da Infração:</label>
-                <textarea id="descricao_infracao" name="descricao_infracao" required>{{ dados_origem.descricao_infracao or '' }}</textarea>
+                <textarea id="descricao_infracao" name="descricao_infracao" required></textarea>
 
                 <label for="fundamento_legal">Fundamento Legal Violado:</label>
                 <textarea id="fundamento_legal" name="fundamento_legal" placeholder="Ex: RDC 275/2002 da ANVISA, Lei Federal nº 6.437/77, etc."></textarea>
@@ -84,9 +85,6 @@
                     <label><input type="checkbox" name="medidas" value="interdicao"> Interdição Parcial/Total</label>
                     <label><input type="checkbox" name="medidas" value="apreensao"> Apreensão</label>
                     <label><input type="checkbox" name="medidas" value="destruicao"> Destruição</label>
-                    <br><br>
-                    <label><input type="checkbox" name="medidas" value="outras"> Outras:</label>
-                    <input type="text" name="medidas_outras_texto" placeholder="Especifique">
                 </div>
             </fieldset>
             
@@ -97,13 +95,9 @@
             <fieldset>
                 <legend>DADOS DO FISCAL SANITÁRIO</legend>
                 <label for="fiscal_nome">Nome:</label>
-                <select id="fiscal_nome" name="fiscal_nome" required>
-                    {% for tecnico in tecnicos %}
-                    <option value="{{ tecnico.id }}">{{ tecnico.nome }}</option>
-                    {% endfor %}
-                </select>
+                <input type="text" id="fiscal_nome" name="fiscal_nome" required>
                 <label>Matrícula / Registro:</label>
-                <input type="text" name="fiscal_matricula" readonly placeholder="Preenchido ao selecionar o fiscal">
+                <input type="text" name="fiscal_matricula">
                 <label>Assinatura:</label>
                 <div class="signature-pad">[Área para Assinatura Eletrônica do Fiscal]</div>
             </fieldset>
@@ -118,7 +112,7 @@
                 <label>Assinatura:</label>
                 <div class="signature-pad">[Área para Assinatura Eletrônica do Autuado]</div>
                 <label for="data_ciencia">Data:</label>
-                <input type="date" id="data_ciencia" name="data_ciencia" value="{{ hoje }}">
+                <input type="date" id="data_ciencia" name="data_ciencia">
                 <div class="checkbox-group" style="margin-top: 15px;">
                     <label><input type="checkbox" name="recusou_assinatura"> Recusou-se a assinar</label>
                 </div>

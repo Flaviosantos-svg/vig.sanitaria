@@ -23,13 +23,14 @@
     <div class="container">
         <h1>Requerimento de Alteração</h1>
         
-        <form method="post" action="{{ url_for('alteracao_empresa') }}">
+        <form method="POST" action="{{ url_for('submeter_solicitacao') }}">
             <div class="form-group">
                 <label for="cnpj">Para começar, digite o CNPJ da empresa:</label>
                 <input type="text" id="cnpj" name="cnpj" required>
             </div>
             <button type="submit">Buscar Empresa</button>
         </form>
+        <input type="hidden" name="tipo_solicitacao" value="Alteração de Empresa">
         <a href="{{ url_for('requerimento_inicial') }}">‹ Voltar</a>
         <hr>
 

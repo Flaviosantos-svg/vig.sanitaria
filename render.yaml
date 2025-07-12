@@ -3,5 +3,5 @@ services:
     name: vigilancia-sanitaria
     env: python
     buildCommand: ""
-    startCommand: gunicorn app:app
+    startCommand: gunicorn app:create_app
     plan: free
