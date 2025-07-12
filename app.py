@@ -32,25 +32,9 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
-
 # ==================================================================
 # 2. CONFIGURAÇÃO E MANIPULAÇÃO DO BANCO DE DADOS (SQLite)
 # ==================================================================
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
-
-# TADA E TEMPO
-@app.template_filter('datetimeformat')
-def datetimeformat(value, format='%d/%m/%Y'):
-    if isinstance(value, datetime):
-        return value.strftime(format)
-    try:
-        return datetime.strptime(value, '%Y-%m-%d').strftime(format)
-    except:
-        return value
-
-# --- 2. BANCO DE DADOS ---
-
 def get_db_connection():
     """Cria e retorna uma conexão com o banco de dados."""
     conn = sqlite3.connect('vigilancia.db')
@@ -400,9 +384,3 @@ if __name__ == '__main__':
         setup_database() # Garante que o DB está pronto antes de rodar
     app.run(debug=True, host="0.0.0.0", port=5001)
 
-    # Garante que o banco de dados e as tabelas sejam criados ao iniciar
-    setup_database()
-    app.run(debug=True, port=5001)
-    
-    if __name__ == "__main__":
-    app.run(debug=True)
